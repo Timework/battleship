@@ -23,9 +23,25 @@ const Ship = (size) => {
         };
     };
 
+    // checking to see if all the positions are hit
+    const isSunk = () => {
+        const hitChecking = (position) => position === 1;
+        return area.every(hitChecking);
+    }
+
+    // this will show the area without letting it be changed
+    const showArea = () => {
+        return area;
+    }
+
+    // this will show the size without letting it be changed
+    const showSize = () => {
+        return size;
+    }
+
     // runs initalize
     initalize();
-    return {size, area, hit};
+    return {showSize, showArea, hit, isSunk};
 };
 
 module.exports.Ship = Ship;
