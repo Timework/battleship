@@ -58,12 +58,20 @@ const Gameboard = () => {
         return (xCoordinate >= 0 && yCoordinate >= 0);
     };
 
-    // checks to see if the coordinate is already occupied
+    // checks to see if the coordinate is already occupied or near a ship
     const emptyChecker = (coordinates) => {
-        for (let i = 0; i < occupied.length; i++){
-           if (occupied[i].includes(coordinates)) {
-               return false;
-           };
+        for (let i = 0; i < occupied.length; i++) {
+            for (let ii = 0; ii < occupied[i].length - 1; ii++) {
+                for (let j = -1; j <= 1; j++) {
+                    if ((occupied[i][ii][0] + j) === coordinates[0]) {
+                        for (let jj = -1; jj <= 1; jj++){
+                            if ((occupied[i][ii][1] + jj) === coordinates[1]) {
+                                return false;
+                            };
+                        };   
+                    };
+                };
+            };
         };
         return true;
     };

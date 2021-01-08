@@ -163,16 +163,93 @@ describe('tests for the gameboard constructor', function () {
         expect(placeShip(Ship(3), -2, -2, true)).toBe(0);
     });
 
+    // this will place two ships in the same location
     const sameShips = (ship, xCoordinate, yCoordinate, vertical) => {
         const testboard = Gameboard();
         testboard.place(ship, xCoordinate, yCoordinate, vertical);
         testboard.place(ship, xCoordinate, yCoordinate, vertical);
-        // changed the occupired back to ships once you are done debugging
-        return testboard.occupied;
+        return testboard.ships();
     };
 
-    test('gameboard will not place a ship that overlaps with another ship', () => {
+    test('gameboard will not place a ship that is in the same location of another ship', () => {
         expect(sameShips(Ship(4), 0, 0, true)).toBe(1);
+    });
+
+    test('gameboard will not place a ship that is in the same location of another ship with different numbers', () => {
+        expect(sameShips(Ship(1), 5, 5, true)).toBe(1);
+    });
+
+    // this function will make two ships overlap slightly to help test the gameboard not allowing overlapping
+    // this will overlap if the ship size is three or bigger
+    const overlapShips = (ship, xCoordinate, yCoordinate, vertical) => {
+        const testboard = Gameboard();
+        testboard.place(ship, xCoordinate, yCoordinate, vertical);
+        testboard.place(ship, xCoordinate, yCoordinate - 2, vertical);
+        return testboard.ships();
+    };
+
+    test('gameboard will not allow ships that overlap with another ship', () => {
+        expect(overlapShips(Ship(3), 4, 4, true)).toBe(1);
+    });
+
+    // this function will cross ships if the ships are size 3 or bigger
+    const crossShips = (ship, xCoordinate, yCoordinate, vertical) => {
+        const testboard = Gameboard();
+        testboard.place(ship, xCoordinate, yCoordinate, vertical);
+        testboard.place(ship, xCoordinate - 2, yCoordinate + 2, !vertical);
+        return testboard.ships();
+    };
+
+    test('gameboard will not allow ships that overlap ships in a cross formation', () => {
+        expect(crossShips(Ship(3), 4, 4, true)).toBe(1);
+    });
+
+    // this function will put two ships next to each other if they are vertical
+    const nearShips = (ship, xCoordinate, yCoordinate, vertical) => {
+        const testboard = Gameboard();
+        testboard.place(ship, xCoordinate, yCoordinate, vertical);
+        testboard.place(ship, xCoordinate - 1, yCoordinate, vertical);
+        return testboard.ships();
+    };
+
+    test('gameboard will not allow ships to be next together vertically', () => {
+        expect(nearShips(Ship(2), 4, 4, true)).toBe(1);
+    });
+
+    // this function will put two ships next to each other if they are horiztonally
+    const hnearShips = (ship, xCoordinate, yCoordinate, vertical) => {
+        const testboard = Gameboard();
+        testboard.place(ship, xCoordinate, yCoordinate, vertical);
+        testboard.place(ship, xCoordinate, yCoordinate + 1, vertical);
+        return testboard.ships();
+    };
+
+    test('gameboard will not allow ships to be next together horizontally', () => {
+        expect(hnearShips(Ship(3), 4, 4, false)).toBe(1);
+    });
+
+    // this function will put two ships diagionally together make the ship 1 length
+    const diagShips = (ship, xCoordinate, yCoordinate, vertical) => {
+        const testboard = Gameboard();
+        testboard.place(ship, xCoordinate, yCoordinate, vertical);
+        testboard.place(ship, xCoordinate + 1, yCoordinate + 1, vertical);
+        return testboard.ships();
+    };
+
+    test('gameboard will not allow ships to be next together diagionally', () => {
+        expect(diagShips(Ship(1), 4, 4, true)).toBe(1);
+    });
+
+    // this function will put two ships almost diagionally together make the ship 1 length
+    const almostDiagShips = (ship, xCoordinate, yCoordinate, vertical) => {
+        const testboard = Gameboard();
+        testboard.place(ship, xCoordinate, yCoordinate, vertical);
+        testboard.place(ship, xCoordinate + 1, yCoordinate + 2, vertical);
+        return testboard.ships();
+    };
+
+    test('gameboard will allow ships to be almost next together diagionally', () => {
+        expect(almostDiagShips(Ship(1), 4, 4, true)).toBe(2);
     });
 
   });
