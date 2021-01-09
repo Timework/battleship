@@ -252,4 +252,133 @@ describe('tests for the gameboard constructor', function () {
         expect(almostDiagShips(Ship(1), 4, 4, true)).toBe(2);
     });
 
+    // this will commit an attack on that board
+    const attackSample = (attackx, attacky) => {
+        const testboard = Gameboard();
+        testboard.place(Ship(4), 2, 2, true);
+        testboard.place(Ship(4), 4, 2, true);
+        testboard.receiveAttack(attackx, attacky);
+        return testboard.showAttacks();
+    };
+    
+
+    test('gameboard can recieve an attack', () => {
+        expect(attackSample(2, 2)).toMatchObject([[2, 2]]);
+    });
+
+    test('gameboard can recieve an attack with a diffent number', () => {
+        expect(attackSample(3, 4)).toMatchObject([[3, 4]]);
+    });
+
+    // this will commit two attacks on the board
+    const doubleAttack = (attackx, attacky, attackxx, attackyy) => {
+        const testboard = Gameboard();
+        testboard.place(Ship(4), 2, 2, true);
+        testboard.place(Ship(4), 4, 2, true);
+        testboard.receiveAttack(attackx, attacky);
+        testboard.receiveAttack(attackxx, attackyy);
+        return testboard.showAttacks();
+    };
+
+    test('gameboard can recieve two attacks', () => {
+        expect(doubleAttack(3, 3, 4, 5)).toMatchObject([[3, 3], [4, 5]]);
+    });
+
+    test('gameboard can recieve two attacks with different numbers', () => {
+        expect(doubleAttack(5, 5, 0, 1)).toMatchObject([[5, 5], [0, 1]]);
+    });
+
+    // this will attack the same place twice
+    const doubleSame = (attackx, attacky) => {
+        const testboard = Gameboard();
+        testboard.place(Ship(4), 2, 2, true);
+        testboard.place(Ship(4), 4, 2, true);
+        testboard.receiveAttack(attackx, attacky);
+        testboard.receiveAttack(attackx, attacky);
+        return testboard.showAttacks();
+    };
+
+    test('gameboard can will not allow the same attack twice', () => {
+        expect(doubleSame(2, 2)).toMatchObject([[2, 2]]);
+    });
+
+    test('gameboard can will not allow the same attack twice with a different number', () => {
+        expect(doubleSame(3, 4)).toMatchObject([[3, 4]]);
+    });
+
+    // this will sink a ship
+    const singleSink = () => {
+        const testboard = Gameboard();
+        testboard.place(Ship(4), 2, 2, true);
+        testboard.place(Ship(4), 4, 2, true);
+        testboard.receiveAttack(2, 2);
+        testboard.receiveAttack(2, 3);
+        testboard.receiveAttack(2, 4);
+        testboard.receiveAttack(2, 5);
+        return testboard.sunk();
+    };
+
+    test('gameboard can sink a ship', () => {
+        expect(singleSink()).toBe(1);
+    });
+
+    // this will sink two ships
+    const doubleSink = () => {
+        const testboard = Gameboard();
+        testboard.place(Ship(4), 2, 2, true);
+        testboard.place(Ship(4), 4, 2, true);
+        testboard.receiveAttack(2, 2);
+        testboard.receiveAttack(2, 3);
+        testboard.receiveAttack(2, 4);
+        testboard.receiveAttack(2, 5);
+        testboard.receiveAttack(4, 2);
+        testboard.receiveAttack(4, 3);
+        testboard.receiveAttack(4, 4);
+        testboard.receiveAttack(4, 5);
+        return testboard.sunk();
+    };
+
+    test('gameboard can sink two ship', () => {
+        expect(doubleSink()).toBe(2);
+    });
+
+    // this will sink everything and check to see
+    const positiveAll = () => {
+        const testboard = Gameboard();
+        testboard.place(Ship(4), 2, 2, true);
+        testboard.place(Ship(4), 4, 2, true);
+        testboard.receiveAttack(2, 2);
+        testboard.receiveAttack(2, 3);
+        testboard.receiveAttack(2, 4);
+        testboard.receiveAttack(2, 5);
+        testboard.receiveAttack(4, 2);
+        testboard.receiveAttack(4, 3);
+        testboard.receiveAttack(4, 4);
+        testboard.receiveAttack(4, 5);
+        return testboard.allSunk();
+    };
+
+    test('gameboard can detect that everything is sunk', () => {
+        expect(positiveAll()).toBe(true);
+    });
+
+    // this will almost sink everything
+    const negativeAll = () => {
+        const testboard = Gameboard();
+        testboard.place(Ship(4), 2, 2, true);
+        testboard.place(Ship(4), 4, 2, true);
+        testboard.receiveAttack(2, 2);
+        testboard.receiveAttack(2, 3);
+        testboard.receiveAttack(2, 4);
+        testboard.receiveAttack(2, 5);
+        testboard.receiveAttack(4, 2);
+        testboard.receiveAttack(4, 3);
+        testboard.receiveAttack(4, 4);
+        return testboard.allSunk();
+    };
+
+    test('gameboard can that not everything is sunk', () => {
+        expect(negativeAll()).toBe(false);
+    });
+
   });
