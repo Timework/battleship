@@ -54,7 +54,7 @@ const Gameboard = () => {
     // checks to see if the ship would be out of bounds
     const boundChecker = (size, coordinate) => {
         finalCoordinate = size + coordinate;
-        return finalCoordinate <= 11;
+        return finalCoordinate <= 10;
     };
 
     // checks to see if the ship's coordinates are positive
@@ -104,6 +104,9 @@ const Gameboard = () => {
                     if (occupied[i][ii][1] === attack[1]) {
                         occupied[i][occupied[i].length -1].hit(ii);
                         attacks.push(attack);
+                        if (occupied[i][occupied[i].length -1].isSunk()) {
+                            attackSurrounding(occupied[i]);
+                        };
                         return true;
                     };
                 };
@@ -111,6 +114,26 @@ const Gameboard = () => {
         };
         attacks.push(attack);
         return false;
+    };
+
+    // this will attack the surrounding area of a ship if it is sunk
+    const attackSurrounding = (destroyedShip) => {
+        for (let i = 0; i < destroyedShip.length; i++){
+            for (let ii = -1; ii < 2; ii++){
+                let xCoordinate = destroyedShip[i][0] + ii;
+                if (xCoordinate >= 0 && xCoordinate <= 9) {
+                    for (let iii = -1; iii < 2; iii++) {
+                        let yCoordinate = destroyedShip[i][1] + iii;
+                        if (yCoordinate >= 0 && yCoordinate <= 9) {
+                            let currentAttack = [xCoordinate, yCoordinate];
+                            if (!attackChecker(currentAttack)) {
+                                attacks.push(currentAttack);
+                            };
+                        };
+                    };
+                };
+            };
+        };
     };
 
     // this will check to see if the attack has already been made

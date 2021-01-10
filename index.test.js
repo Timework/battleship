@@ -148,7 +148,7 @@ describe('tests for the gameboard constructor', function () {
     });
 
     test('gameboard will still place a ship that is on the edge', () => {
-        expect(placeShip(Ship(1), 10, 10, false)).toBe(1);
+        expect(placeShip(Ship(1), 9, 9, false)).toBe(1);
     });
 
     test('gameboard will not place a ship on negative y coordinates', () => {
@@ -379,6 +379,61 @@ describe('tests for the gameboard constructor', function () {
 
     test('gameboard can that not everything is sunk', () => {
         expect(negativeAll()).toBe(false);
+    });
+
+    // this is to test the surrounding attacks that result from a boat sinking
+    const surroundAttack = () => {
+        const testboard = Gameboard();
+        testboard.place(Ship(4), 2, 2, true);
+        testboard.receiveAttack(2, 2);
+        testboard.receiveAttack(2, 3);
+        testboard.receiveAttack(2, 4);
+        testboard.receiveAttack(2, 5);
+        return testboard.showAttacks().length;
+    };
+
+    test('gameboard will automatically attack all spaces surrounding a ship when sunk', () => {
+        expect(surroundAttack()).toBe(18);
+    });
+
+    // this will put a ship on the edge of the map and then sink it to see if the attacks are counted correctly
+    const surroundAttackEdge = () => {
+        const testboard = Gameboard();
+        testboard.place(Ship(4), 9, 2, true);
+        testboard.receiveAttack(9, 2);
+        testboard.receiveAttack(9, 3);
+        testboard.receiveAttack(9, 4);
+        testboard.receiveAttack(9, 5);
+        return testboard.showAttacks().length;
+    };
+
+    test('gameboard will not autmatically attack spots that are out of bound when the ship is sunk', () => {
+        expect(surroundAttackEdge()).toBe(12);
+    });
+
+    // attacks when sunk works on a different size ship as well
+    const surroundAttackSmall = () => {
+        const testboard = Gameboard();
+        testboard.place(Ship(1), 2, 2, true);
+        testboard.receiveAttack(2, 2);
+        return testboard.showAttacks().length;
+    };
+
+    test('gameboard will automatically attack spots on a smaller ship', () => {
+        expect(surroundAttackSmall()).toBe(9);
+    });
+
+    const surroundAttackSmallExtra = () => {
+        const testboard = Gameboard();
+        testboard.place(Ship(1), 2, 2, true);
+        testboard.receiveAttack(2, 2);
+        testboard.receiveAttack(1, 2);
+        testboard.receiveAttack(3, 2);
+        return testboard.showAttacks().length;
+    };
+
+    test('gameboard will not repeat attacks when a ship is sunk', () => {
+        expect(surroundAttackSmallExtra()).toBe(9);
     });
 
   });
