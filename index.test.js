@@ -2,6 +2,7 @@ const rewire = require('rewire');
 
 const Ship = rewire('./components/ship').__get__("Ship");
 const Gameboard = rewire('./components/gameboard').__get__("Gameboard");
+const Player = rewire('./components/player').__get__("Player");
 
 describe('tests for the ship constructor', function () {
 
@@ -436,4 +437,79 @@ describe('tests for the gameboard constructor', function () {
         expect(surroundAttackSmallExtra()).toBe(9);
     });
 
+  });
+
+  describe('tests for the player constructor', function () {
+
+    const attackPlayer = () => {
+        const player1 = Player(false);
+        const player2 = Player(true);
+        player1.attack(player2, 2, 2);
+        return player2.gameboard.showAttacks();
+    };
+
+    test('a player can attack the board', () => {
+        expect(attackPlayer()).toMatchObject([[2, 2]]);
+    });
+
+    // this will win the game
+    const winGame = () => {
+        const player1 = Player(false);
+        const player2 = Player(true);
+        player2.gameboard.place(Ship(3), 2, 2, true);
+        player1.attack(player2, 2, 2);
+        player1.attack(player2, 2, 3);
+        player1.attack(player2, 2, 4);
+        return player1.win(player2);
+    };
+
+
+    test('player can win the game', () => {
+        expect(winGame()).toBe(true);
+    });
+
+    // this will almost win the game
+    const almostWinGame = () => {
+        const player1 = Player(false);
+        const player2 = Player(true);
+        player2.gameboard.place(Ship(3), 2, 2, true);
+        player1.attack(player2, 2, 2);
+        player1.attack(player2, 2, 3);
+        return player1.win(player2);
+    };
+
+    test('it wont say the player won if he didnt win', () => {
+        expect(almostWinGame()).toBe(false);
+    });
+
+    // this will make the computer attack at random
+    const computerAttack = () => {
+        const player1 = Player(false);
+        const player2 = Player(true);
+        player2.autoAttack(player1);
+        player2.autoAttack(player1);
+        player2.autoAttack(player1);
+        return player1.gameboard.showAttacks().length;
+    };
+
+    test('the computer can make a random attack', () => {
+        expect(computerAttack()).toBe(3);
+    });
+
+    // this will check to see if the computer updates the available attacks
+    const computerUpdate = () => {
+        const player1 = Player(false);
+        const player2 = Player(true);
+        player1.gameboard.place(Ship(3), 2, 2, true);
+        player2.attack(player1, 2, 2);
+        player2.attack(player1, 2, 3);
+        player2.attack(player1, 2, 4);
+        player2.updateAttack(player1);
+        player2.autoAttack(player1)
+        return player2.showOptionalAttacks().length;
+    };
+
+    test('the computer updates the optional attacks properly', () => {
+        expect(computerUpdate()).toBe(84);
+    });
   });
