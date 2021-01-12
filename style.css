@@ -1,0 +1,23 @@
+#firstPlayerForm {
+    display: none;
+}
+
+#twoPlayerForm {
+    display: none;
+}
+
+.square {
+    border: 1px solid black;
+}
+
+#board {
+    display: grid;
+    width: 80%;
+    height: 500px;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+}
+
+.green {
+    background-color: green;
+}
