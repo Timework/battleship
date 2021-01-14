@@ -58,8 +58,10 @@ const Player = (ai, name = "Computer") => {
     // this will make a random attack if it is a computer
     const autoAttack = (enemy) => {
         let random = randomAttack();
-        enemy.gameboard.receiveAttack(optionalAttacks[random][0], optionalAttacks[random][1]);
+        let result = enemy.gameboard.receiveAttack(optionalAttacks[random][0], optionalAttacks[random][1]);
+        result.push([optionalAttacks[random][0], optionalAttacks[random][1]]);
         updateAttack(enemy);
+        return result;
     };
 
     // this will show the optional attacks

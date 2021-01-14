@@ -10,7 +10,7 @@
     border: 1px solid black;
 }
 
-#board {
+#board, #board1 {
     display: grid;
     width: 80%;
     height: 500px;
@@ -18,6 +18,11 @@
     grid-template-rows: repeat(10, 1fr);
 }
 
+
 .green {
     background-color: green;
+}
+
+.red {
+    background-color: red;
 }

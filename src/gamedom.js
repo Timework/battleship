@@ -123,12 +123,24 @@ const Gamedom = () => {
     const singlePlayerAttack = (coordinates) => {
         clearMessage("error");
         let result = player1.attack(player2, coordinates[0], coordinates[1]);
-        markSquare(coordinates);
         if (winLoop(player1, player2)) {
+            markSquare(coordinates, "red");
+            markSurrounding(result[1]);
             return;
         };
-        if (result) {
-            player2.autoAttack(player1);
+        if (result[0] && Array.isArray(result[1])) {
+            markSquare(coordinates, "red");
+            markSurrounding(result[1]);
+            computerMove();
+        } else if (result[0] && result[1]) {
+            markSquare(coordinates, "red");
+            computerMove();
+            if (winLoop(player2, player1)) {
+                return;
+            };
+        } else if (result[0]) {
+            markSquare(coordinates, "green");
+            computerMove();
             if (winLoop(player2, player1)) {
                 return;
             };
@@ -137,20 +149,70 @@ const Gamedom = () => {
         };
     };
 
+    // this will be the computer move in single player mode
+    const computerMove = () => {
+        let move = player2.autoAttack(player1);
+        console.log(move[2]);
+        if (move[0] && Array.isArray(move[1])) {
+            markComputerSquare(move[2], "red");
+            markComputerSurrounding(move[1]);
+        } else if (move[0] && move[1]) {
+            markComputerSquare(move[2], "red");
+        } else if (move[0]) {
+            markComputerSquare(move[2], "green");
+        } else {
+            computerMove();
+        };
+    };
+
+    // this will mark your board after the computer attacks
+    const markComputerSquare = (coordinates, color) => {
+        let square = document.getElementById(`1, ${coordinates[0]}, ${coordinates[1]}`);
+        console.log(`1, ${coordinates[0]}, ${coordinates[1]}`);
+        square.classList.add(color);
+    };
+
+    // this will mark the area around a sunk ship after a computer attack
+    const markComputerSurrounding = (position) => {
+        for (let i = 0; i < position.length; i++){
+            markComputerSquare(position[i], "green");
+        };
+    };
+
+    // this will make the area around a sunk ship marked
+    const markSurrounding = (position) => {
+        for (let i = 0; i < position.length; i++){
+            markSquare(position[i], "green");
+        };
+    };
+
     // this will mark the square after it has been attack
-    const markSquare = (coordinates) => {
+    const markSquare = (coordinates, color) => {
         let square = document.getElementById(`${coordinates[0]}, ${coordinates[1]}`);
-        square.classList.add("green");
+        square.classList.add(color);
+    };
+
+     // this will generate the second board
+     const generateSecondBoard = () => {
+        const board = document.getElementById("board1");
+        for (let i = 0; i <= 9; i++){
+            for (let ii = 0; ii <= 9; ii++){
+                let square = document.createElement("div");
+                square.id = `1, ${ii}, ${i}`
+                square.classList.add("square");
+                board.appendChild(square);
+            };
+        };
     };
 
     // this will generate the board
     const generateBoard = () => {
         const board = document.getElementById("board");
         for (let i = 0; i <= 9; i++){
-            for (let ii=0; ii <= 9; ii++){
+            for (let ii = 0; ii <= 9; ii++){
                 let square = document.createElement("div");
-                square.id = `${i}, ${ii}`
-                square.addEventListener('click', () => {singlePlayerAttack([i, ii])});
+                square.id = `${ii}, ${i}`
+                square.addEventListener('click', () => {singlePlayerAttack([ii, i])});
                 square.classList.add("square");
                 board.appendChild(square);
             };
@@ -175,7 +237,7 @@ const Gamedom = () => {
     // this will announce the winner
     const announceWinner = (player) => {
         let announcement = document.getElementById('result');
-        result.innerHTML = `${player.name} won!`
+        announcement.innerHTML = `${player.name} won!`
     };
 
     // this will set up an error message
@@ -202,6 +264,7 @@ const Gamedom = () => {
         testBoardSetUp(player1);
         testBoardSetUp(player2);
         generateBoard();
+        generateSecondBoard();
     };
 
 

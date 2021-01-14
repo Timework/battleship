@@ -90,10 +90,10 @@ const Gameboard = () => {
     const receiveAttack = (attackx, attacky) => {
         let currentAttack = [attackx, attacky];
         if (!attackChecker(currentAttack)){
-            hitShip(currentAttack);
-            return true;
+            let result = hitShip(currentAttack);
+            return [true, result];
         } else {
-            return false;
+            return [false, false];
         };
     };
 
@@ -106,7 +106,7 @@ const Gameboard = () => {
                         occupied[i][occupied[i].length -1].hit(ii);
                         attacks.push(attack);
                         if (occupied[i][occupied[i].length -1].isSunk()) {
-                            attackSurrounding(occupied[i]);
+                            return attackSurrounding(occupied[i]);
                         };
                         return true;
                     };
@@ -119,6 +119,7 @@ const Gameboard = () => {
 
     // this will attack the surrounding area of a ship if it is sunk
     const attackSurrounding = (destroyedShip) => {
+        let newAttacks = []
         for (let i = 0; i < destroyedShip.length; i++){
             for (let ii = -1; ii < 2; ii++){
                 let xCoordinate = destroyedShip[i][0] + ii;
@@ -128,6 +129,7 @@ const Gameboard = () => {
                         if (yCoordinate >= 0 && yCoordinate <= 9) {
                             let currentAttack = [xCoordinate, yCoordinate];
                             if (!attackChecker(currentAttack)) {
+                                newAttacks.push(currentAttack);
                                 attacks.push(currentAttack);
                             };
                         };
@@ -135,6 +137,7 @@ const Gameboard = () => {
                 };
             };
         };
+        return newAttacks
     };
 
     // this will check to see if the attack has already been made
@@ -299,12 +302,24 @@ const Gamedom = () => {
     const singlePlayerAttack = (coordinates) => {
         clearMessage("error");
         let result = player1.attack(player2, coordinates[0], coordinates[1]);
-        markSquare(coordinates);
         if (winLoop(player1, player2)) {
+            markSquare(coordinates, "red");
+            markSurrounding(result[1]);
             return;
         };
-        if (result) {
-            player2.autoAttack(player1);
+        if (result[0] && Array.isArray(result[1])) {
+            markSquare(coordinates, "red");
+            markSurrounding(result[1]);
+            computerMove();
+        } else if (result[0] && result[1]) {
+            markSquare(coordinates, "red");
+            computerMove();
+            if (winLoop(player2, player1)) {
+                return;
+            };
+        } else if (result[0]) {
+            markSquare(coordinates, "green");
+            computerMove();
             if (winLoop(player2, player1)) {
                 return;
             };
@@ -313,20 +328,70 @@ const Gamedom = () => {
         };
     };
 
+    // this will be the computer move in single player mode
+    const computerMove = () => {
+        let move = player2.autoAttack(player1);
+        console.log(move[2]);
+        if (move[0] && Array.isArray(move[1])) {
+            markComputerSquare(move[2], "red");
+            markComputerSurrounding(move[1]);
+        } else if (move[0] && move[1]) {
+            markComputerSquare(move[2], "red");
+        } else if (move[0]) {
+            markComputerSquare(move[2], "green");
+        } else {
+            computerMove();
+        };
+    };
+
+    // this will mark your board after the computer attacks
+    const markComputerSquare = (coordinates, color) => {
+        let square = document.getElementById(`1, ${coordinates[0]}, ${coordinates[1]}`);
+        console.log(`1, ${coordinates[0]}, ${coordinates[1]}`);
+        square.classList.add(color);
+    };
+
+    // this will mark the area around a sunk ship after a computer attack
+    const markComputerSurrounding = (position) => {
+        for (let i = 0; i < position.length; i++){
+            markComputerSquare(position[i], "green");
+        };
+    };
+
+    // this will make the area around a sunk ship marked
+    const markSurrounding = (position) => {
+        for (let i = 0; i < position.length; i++){
+            markSquare(position[i], "green");
+        };
+    };
+
     // this will mark the square after it has been attack
-    const markSquare = (coordinates) => {
+    const markSquare = (coordinates, color) => {
         let square = document.getElementById(`${coordinates[0]}, ${coordinates[1]}`);
-        square.classList.add("green");
+        square.classList.add(color);
+    };
+
+     // this will generate the second board
+     const generateSecondBoard = () => {
+        const board = document.getElementById("board1");
+        for (let i = 0; i <= 9; i++){
+            for (let ii = 0; ii <= 9; ii++){
+                let square = document.createElement("div");
+                square.id = `1, ${ii}, ${i}`
+                square.classList.add("square");
+                board.appendChild(square);
+            };
+        };
     };
 
     // this will generate the board
     const generateBoard = () => {
         const board = document.getElementById("board");
         for (let i = 0; i <= 9; i++){
-            for (let ii=0; ii <= 9; ii++){
+            for (let ii = 0; ii <= 9; ii++){
                 let square = document.createElement("div");
-                square.id = `${i}, ${ii}`
-                square.addEventListener('click', () => {singlePlayerAttack([i, ii])});
+                square.id = `${ii}, ${i}`
+                square.addEventListener('click', () => {singlePlayerAttack([ii, i])});
                 square.classList.add("square");
                 board.appendChild(square);
             };
@@ -351,7 +416,7 @@ const Gamedom = () => {
     // this will announce the winner
     const announceWinner = (player) => {
         let announcement = document.getElementById('result');
-        result.innerHTML = `${player.name} won!`
+        announcement.innerHTML = `${player.name} won!`
     };
 
     // this will set up an error message
@@ -378,6 +443,7 @@ const Gamedom = () => {
         testBoardSetUp(player1);
         testBoardSetUp(player2);
         generateBoard();
+        generateSecondBoard();
     };
 
 
@@ -459,8 +525,10 @@ const Player = (ai, name = "Computer") => {
     // this will make a random attack if it is a computer
     const autoAttack = (enemy) => {
         let random = randomAttack();
-        enemy.gameboard.receiveAttack(optionalAttacks[random][0], optionalAttacks[random][1]);
+        let result = enemy.gameboard.receiveAttack(optionalAttacks[random][0], optionalAttacks[random][1]);
+        result.push([optionalAttacks[random][0], optionalAttacks[random][1]]);
         updateAttack(enemy);
+        return result;
     };
 
     // this will show the optional attacks

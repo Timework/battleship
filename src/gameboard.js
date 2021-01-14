@@ -89,10 +89,10 @@ const Gameboard = () => {
     const receiveAttack = (attackx, attacky) => {
         let currentAttack = [attackx, attacky];
         if (!attackChecker(currentAttack)){
-            hitShip(currentAttack);
-            return true;
+            let result = hitShip(currentAttack);
+            return [true, result];
         } else {
-            return false;
+            return [false, false];
         };
     };
 
@@ -105,7 +105,7 @@ const Gameboard = () => {
                         occupied[i][occupied[i].length -1].hit(ii);
                         attacks.push(attack);
                         if (occupied[i][occupied[i].length -1].isSunk()) {
-                            attackSurrounding(occupied[i]);
+                            return attackSurrounding(occupied[i]);
                         };
                         return true;
                     };
@@ -118,6 +118,7 @@ const Gameboard = () => {
 
     // this will attack the surrounding area of a ship if it is sunk
     const attackSurrounding = (destroyedShip) => {
+        let newAttacks = []
         for (let i = 0; i < destroyedShip.length; i++){
             for (let ii = -1; ii < 2; ii++){
                 let xCoordinate = destroyedShip[i][0] + ii;
@@ -127,6 +128,7 @@ const Gameboard = () => {
                         if (yCoordinate >= 0 && yCoordinate <= 9) {
                             let currentAttack = [xCoordinate, yCoordinate];
                             if (!attackChecker(currentAttack)) {
+                                newAttacks.push(currentAttack);
                                 attacks.push(currentAttack);
                             };
                         };
@@ -134,6 +136,7 @@ const Gameboard = () => {
                 };
             };
         };
+        return newAttacks
     };
 
     // this will check to see if the attack has already been made
