@@ -192,6 +192,7 @@ const Gamedom = () => {
     // declaring the players
     let player1;
     let player2;
+    let difficulty;
 
     // runs in the beginning of a game
     const init = () => {
@@ -289,6 +290,7 @@ const Gamedom = () => {
         player1 = Player(false, first);
         player2 = Player(true);
         ai = true;
+        difficulty = setDifficulty();
         testPackage();
     };
 
@@ -310,16 +312,14 @@ const Gamedom = () => {
         if (result[0] && Array.isArray(result[1])) {
             markSquare(coordinates, "red");
             markSurrounding(result[1]);
-            computerMove();
         } else if (result[0] && result[1]) {
             markSquare(coordinates, "red");
-            computerMove();
             if (winLoop(player2, player1)) {
                 return;
             };
         } else if (result[0]) {
             markSquare(coordinates, "green");
-            computerMove();
+            computerMove(difficulty);
             if (winLoop(player2, player1)) {
                 return;
             };
@@ -329,17 +329,29 @@ const Gamedom = () => {
     };
 
     // this will be the computer move in single player mode
-    const computerMove = () => {
-        let move = player2.autoAttack(player1);
+    const computerMove = (level) => {
+        let move = player2.autoAttack(player1, level);
         if (move[0] && Array.isArray(move[1])) {
             markComputerSquare(move[2], "red");
             markComputerSurrounding(move[1]);
+            computerMove(level);
         } else if (move[0] && move[1]) {
             markComputerSquare(move[2], "red");
+            computerMove(level);
         } else if (move[0]) {
             markComputerSquare(move[2], "green");
         } else {
-            computerMove();
+            computerMove(level);
+        };
+    };
+
+    // this will set the difficuty of the ai
+    const setDifficulty = () => {
+        let radios = document.getElementsByName("difficulty");
+        for (let i = 0; i < radios.length; i++){
+            if (radios[i].checked) {
+                return radios[i].value;
+            };
         };
     };
 
@@ -526,22 +538,44 @@ const Player = (ai, name = "Computer") => {
     };
 
     // this will make a random attack if it is a computer
-    const autoAttack = (enemy) => {
+    const autoAttack = (enemy, level) => {
         if (!foundShip) {
         let random = randomAttack(optionalAttacks);
         let result = enemy.gameboard.receiveAttack(optionalAttacks[random][0], optionalAttacks[random][1]);
         result.push([optionalAttacks[random][0], optionalAttacks[random][1]]);
-        if (result[1] === true) {
+        if (result[1] === true && level === "3") {
             foundShip = true;
             firstContact = result[2];
+            markKnownShip(result[2]);
+        } else if (result[1] === true && level === "2"){
+            foundShip = true;
             markKnownShip(result[2]);
         };
         updateAttack(enemy);
         return result;
-        } else {
+        } else if (level === "2") {
+            let result = attackMedium(enemy);
+            return result;
+         } else {
             let result = attackKnownShip(enemy);
-            return result   
+            return result;   
         };
+    };
+
+    // this will set an attack in the medium difficulty
+    const attackMedium = (enemy) => {
+        let random = randomAttack(knownShip);
+        let result = enemy.gameboard.receiveAttack(knownShip[random][0], knownShip[random][1]);
+        result.push([knownShip[random][0], knownShip[random][1]]);
+        updateAttack(enemy);
+        if (result[1] === true) {
+            markKnownShip(result[2]);
+            updateKnownAttacks();
+        } else if (Array.isArray(result[1])) {
+            foundShip = false;
+            updateKnownAttacks();
+        };
+        return result;
     };
 
     // this will attack a known ship

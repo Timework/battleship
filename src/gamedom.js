@@ -13,6 +13,7 @@ const Gamedom = () => {
     // declaring the players
     let player1;
     let player2;
+    let difficulty;
 
     // runs in the beginning of a game
     const init = () => {
@@ -110,6 +111,7 @@ const Gamedom = () => {
         player1 = Player(false, first);
         player2 = Player(true);
         ai = true;
+        difficulty = setDifficulty();
         testPackage();
     };
 
@@ -131,16 +133,14 @@ const Gamedom = () => {
         if (result[0] && Array.isArray(result[1])) {
             markSquare(coordinates, "red");
             markSurrounding(result[1]);
-            computerMove();
         } else if (result[0] && result[1]) {
             markSquare(coordinates, "red");
-            computerMove();
             if (winLoop(player2, player1)) {
                 return;
             };
         } else if (result[0]) {
             markSquare(coordinates, "green");
-            computerMove();
+            computerMove(difficulty);
             if (winLoop(player2, player1)) {
                 return;
             };
@@ -150,17 +150,29 @@ const Gamedom = () => {
     };
 
     // this will be the computer move in single player mode
-    const computerMove = () => {
-        let move = player2.autoAttack(player1);
+    const computerMove = (level) => {
+        let move = player2.autoAttack(player1, level);
         if (move[0] && Array.isArray(move[1])) {
             markComputerSquare(move[2], "red");
             markComputerSurrounding(move[1]);
+            computerMove(level);
         } else if (move[0] && move[1]) {
             markComputerSquare(move[2], "red");
+            computerMove(level);
         } else if (move[0]) {
             markComputerSquare(move[2], "green");
         } else {
-            computerMove();
+            computerMove(level);
+        };
+    };
+
+    // this will set the difficuty of the ai
+    const setDifficulty = () => {
+        let radios = document.getElementsByName("difficulty");
+        for (let i = 0; i < radios.length; i++){
+            if (radios[i].checked) {
+                return radios[i].value;
+            };
         };
     };
 

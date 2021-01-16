@@ -61,22 +61,44 @@ const Player = (ai, name = "Computer") => {
     };
 
     // this will make a random attack if it is a computer
-    const autoAttack = (enemy) => {
+    const autoAttack = (enemy, level) => {
         if (!foundShip) {
         let random = randomAttack(optionalAttacks);
         let result = enemy.gameboard.receiveAttack(optionalAttacks[random][0], optionalAttacks[random][1]);
         result.push([optionalAttacks[random][0], optionalAttacks[random][1]]);
-        if (result[1] === true) {
+        if (result[1] === true && level === "3") {
             foundShip = true;
             firstContact = result[2];
+            markKnownShip(result[2]);
+        } else if (result[1] === true && level === "2"){
+            foundShip = true;
             markKnownShip(result[2]);
         };
         updateAttack(enemy);
         return result;
-        } else {
+        } else if (level === "2") {
+            let result = attackMedium(enemy);
+            return result;
+         } else {
             let result = attackKnownShip(enemy);
-            return result   
+            return result;   
         };
+    };
+
+    // this will set an attack in the medium difficulty
+    const attackMedium = (enemy) => {
+        let random = randomAttack(knownShip);
+        let result = enemy.gameboard.receiveAttack(knownShip[random][0], knownShip[random][1]);
+        result.push([knownShip[random][0], knownShip[random][1]]);
+        updateAttack(enemy);
+        if (result[1] === true) {
+            markKnownShip(result[2]);
+            updateKnownAttacks();
+        } else if (Array.isArray(result[1])) {
+            foundShip = false;
+            updateKnownAttacks();
+        };
+        return result;
     };
 
     // this will attack a known ship
