@@ -11,8 +11,9 @@
 }
 
 #board, #board1 {
+    margin: 20px;
     display: grid;
-    width: 80%;
+    width: 40%;
     height: 500px;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
@@ -25,4 +26,7 @@
 
 .red {
     background-color: red;
+}
+.flex {
+    display: flex;
 }

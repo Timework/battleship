@@ -152,6 +152,9 @@ const Gamedom = () => {
     // this will be the computer move in single player mode
     const computerMove = (level) => {
         let move = player2.autoAttack(player1, level);
+        if (winLoop(player2, player1)) {
+            return;
+        };
         if (move[0] && Array.isArray(move[1])) {
             markComputerSquare(move[2], "red");
             markComputerSurrounding(move[1]);
@@ -264,9 +267,11 @@ const Gamedom = () => {
 
     // will set up ships on the board determinded testing purposes only
     const testBoardSetUp = (player) => {
-        player.gameboard.place(Ship(4), 2, 2, false);
-        player.gameboard.place(Ship(4), 2, 4, false);
-        player.gameboard.place(Ship(4), 2, 6, false);
+        player.gameboard.place(Ship(2), 2, 2, true);
+        player.gameboard.place(Ship(3), 4, 4, true);
+        player.gameboard.place(Ship(3), 9, 6, true);
+        player.gameboard.place(Ship(4), 4, 8, false);
+        player.gameboard.place(Ship(5), 0, 0, false);
     };
 
     // this will hold the test package

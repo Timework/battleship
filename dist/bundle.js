@@ -334,6 +334,9 @@ const Gamedom = () => {
         if (move[0] && Array.isArray(move[1])) {
             markComputerSquare(move[2], "red");
             markComputerSurrounding(move[1]);
+            if (winLoop(player2, player1)) {
+                return;
+            };
             computerMove(level);
         } else if (move[0] && move[1]) {
             markComputerSquare(move[2], "red");
@@ -443,9 +446,11 @@ const Gamedom = () => {
 
     // will set up ships on the board determinded testing purposes only
     const testBoardSetUp = (player) => {
-        player.gameboard.place(Ship(4), 2, 2, false);
-        player.gameboard.place(Ship(4), 2, 4, false);
-        player.gameboard.place(Ship(4), 2, 6, false);
+        player.gameboard.place(Ship(2), 2, 2, true);
+        player.gameboard.place(Ship(3), 4, 4, true);
+        player.gameboard.place(Ship(3), 9, 6, true);
+        player.gameboard.place(Ship(4), 4, 8, false);
+        player.gameboard.place(Ship(5), 0, 0, false);
     };
 
     // this will hold the test package
@@ -487,6 +492,139 @@ const Player = (ai, name = "Computer") => {
     let firstContact = "";
     let knowny = false;
     let knownx = false;
+    let unsunkShips = {
+        five:1,
+        four:1,
+        three:2,
+        two:1, 
+    };
+    let hitCounter = 0;
+    let hardBoard = [];
+
+    // this will do the attack for the very hard mode
+    const hardAttack = (enemy) => {
+        resetHardBoard();
+        hardPatternBoard();
+        shipPointAdder();
+        let randomNumber = hardBoardTotal();
+        console.log(unsunkShips);
+        console.log(randomNumber);
+        let random = randomAttack(randomNumber);
+        console.log(random);
+        let attack = findAttack(random);
+        let result = enemy.gameboard.receiveAttack(attack[0], attack[1]);
+        result.push([attack[0], attack[1]]);
+        console.log([attack[0], attack[1]]);
+        return result;
+    };
+
+    // this will find the attack for very hard mode
+    const findAttack = (random) => {
+        let counter = 0;
+        for (let i = 0; i < hardBoard.length; i++){
+            counter += hardBoard[i][2];
+            if (random <= counter) {
+                return [hardBoard[i][0], hardBoard[i][1]];
+            };
+        };
+    };
+
+    // this will add points based on the unsunk ships
+    const shipPointAdder = () => {
+        if (unsunkShips.five > 0) {
+            hardPointAdded(5);
+        };
+        if (unsunkShips.four > 0) {
+            hardPointAdded(4);
+        };
+        if (unsunkShips.three > 1) {
+            hardPointAdded(3);
+            hardPointAdded(3);
+        } else if (unsunkShips.three > 0) {
+            hardPointAdded(3);
+        };
+        if (unsunkShips.two > 0) {
+            hardPointAdded(2);
+        };
+    };
+
+    // this will reset hard board
+    const resetHardBoard = () => {
+        hardBoard = [];
+    };
+
+    // this will generate the attack pattern of the very hard mode
+    const hardPatternBoard = () => {
+        for (let i = 0; i <= 9; i++){
+            for (let ii = 0; ii <= 9; ii++){
+                hardBoard.push([i, ii, 0]);
+            };
+        };
+    };
+
+    // this will count the amount of points in the hard board
+    const hardBoardTotal = () => {
+        let total = 0;
+        hardBoard.forEach((x) => {
+            total += x[2];
+        });
+        return total;
+    };
+
+    // this will add points to the hard board
+    const hardPointAdded = (ship) => {
+        for (let i = 0; i <= 9; i++){
+            for (let ii = 0; ii <= 10 - ship; ii++){
+                let temp = [];
+                for (let iii = 0; iii < ship; iii++){
+                    temp.push([ii + iii, i]); 
+                };
+                if (theoreticalShipCheck(temp)) {
+                    addPoints(temp);
+                };
+            };
+        };
+        for (let i = 0; i <= 10 - ship; i++){
+            for (let ii = 0; ii <= 9; ii++){
+                let temp = [];
+                for (let iii = 0; iii < ship; iii++){
+                    temp.push([ii, i + iii]); 
+                };
+                if (theoreticalShipCheck(temp)) {
+                    addPoints(temp);
+                };
+            };
+        };
+    };
+
+    // add points to the ship
+    const addPoints = (ship) => {
+        for (let i = 0; i < ship.length; i++){
+            hardBoardAdded(ship[i]);
+        };
+    };
+
+    // adds points to the hard board
+    const hardBoardAdded = (ship) => {
+        for (let i = 0; i <= hardBoard.length; i++){
+            if (hardBoard[i][0] === ship[0]) {
+                if (hardBoard[i][1] === ship[1]){
+                    hardBoard[i][2] += 1;
+                    return;
+                };
+            };
+        };
+    };
+
+    // this will check to see if all the parts of the theoretical ship is possible
+    const theoreticalShipCheck = (ship) => {
+        for (let i = 0; i < ship.length; i++){
+            if (!isOptional([ship[i][0], ship[i][1]])){
+                return false;
+            };
+        };
+        return true;
+    };
 
     // this will run when the player is made
     const init = () => {
@@ -516,7 +654,7 @@ const Player = (ai, name = "Computer") => {
 
     // this will pick a random number for the attack
     const randomAttack = (source) => {
-        return Math.floor(Math.random() * Math.floor(source.length))
+        return Math.floor(Math.random() * Math.floor(source))
     };
 
     // this will update the available attacks
@@ -539,15 +677,30 @@ const Player = (ai, name = "Computer") => {
 
     // this will make a random attack if it is a computer
     const autoAttack = (enemy, level) => {
-        if (!foundShip) {
-        let random = randomAttack(optionalAttacks);
+        if (level === "4") {
+            if (!foundShip) {
+                let result = hardAttack(enemy);
+                if (result[1] === true) {
+                    foundShip = true;
+                    firstContact = result[2];
+                    markKnownShip(result[2]);
+                    hitCounter += 1;
+                };
+                updateAttack(enemy);
+                return result;
+            } else {
+                let result = attackKnownShip(enemy);
+                return result;   
+            };
+        } else if (!foundShip && !(level === "4")) {
+        let random = randomAttack(optionalAttacks.length);
         let result = enemy.gameboard.receiveAttack(optionalAttacks[random][0], optionalAttacks[random][1]);
         result.push([optionalAttacks[random][0], optionalAttacks[random][1]]);
         if (result[1] === true && level === "3") {
             foundShip = true;
             firstContact = result[2];
             markKnownShip(result[2]);
-        } else if (result[1] === true && level === "2"){
+        } else if (result[1] === true && level === "2") {
             foundShip = true;
             markKnownShip(result[2]);
         };
@@ -564,7 +717,7 @@ const Player = (ai, name = "Computer") => {
 
     // this will set an attack in the medium difficulty
     const attackMedium = (enemy) => {
-        let random = randomAttack(knownShip);
+        let random = randomAttack(knownShip.length);
         let result = enemy.gameboard.receiveAttack(knownShip[random][0], knownShip[random][1]);
         result.push([knownShip[random][0], knownShip[random][1]]);
         updateAttack(enemy);
@@ -578,13 +731,29 @@ const Player = (ai, name = "Computer") => {
         return result;
     };
 
+    // this will destory a ship 
+    const destroyedShip = (ship) => {
+        if (ship === 2){
+            unsunkShips.two -= 1;
+        } else if (ship === 3){
+            unsunkShips.three -= 1;
+        } else if (ship === 4){
+            unsunkShips.four -= 1;
+        } else if (ship === 5){
+            unsunkShips.five -= 1;
+        };
+    };
+
     // this will attack a known ship
     const attackKnownShip = (enemy) => {
-        let random = randomAttack(knownShip);
+        let random = randomAttack(knownShip.length);
         let result = enemy.gameboard.receiveAttack(knownShip[random][0], knownShip[random][1]);
         result.push([knownShip[random][0], knownShip[random][1]]);
         updateAttack(enemy);
         if (result[1] === true) {
+            if (hitCounter >= 1){
+                hitCounter += 1;
+            };
             markKnownShip(result[2]);
             updateKnownAttacks();
             computerIntelligence(result[2]);
@@ -594,6 +763,11 @@ const Player = (ai, name = "Computer") => {
                 filterKnownAttacks(false);
             };
         } else if (Array.isArray(result[1])) {
+            if (hitCounter >= 1) {
+                hitCounter += 1
+                destroyedShip(hitCounter);
+                hitCounter = 0;
+            };
             foundShip = false;
             knowny = false;
             knownx = false;
@@ -605,7 +779,7 @@ const Player = (ai, name = "Computer") => {
 
 
     // this will choose y-axis or x-axis depending on the coordinates
-    computerIntelligence = (coordinates) => {
+    const computerIntelligence = (coordinates) => {
         if (coordinates[0] === firstContact[0]){
             knownx = true;
         } else {
