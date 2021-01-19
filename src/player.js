@@ -25,14 +25,11 @@ const Player = (ai, name = "Computer") => {
         hardPatternBoard();
         shipPointAdder();
         let randomNumber = hardBoardTotal();
-        console.log(unsunkShips);
-        console.log(randomNumber);
         let random = randomAttack(randomNumber);
         console.log(random);
         let attack = findAttack(random);
         let result = enemy.gameboard.receiveAttack(attack[0], attack[1]);
         result.push([attack[0], attack[1]]);
-        console.log([attack[0], attack[1]]);
         return result;
     };
 
@@ -251,15 +248,20 @@ const Player = (ai, name = "Computer") => {
 
     // this will destory a ship 
     const destroyedShip = (ship) => {
-        if (ship === 2){
-            unsunkShips.two -= 1;
-        } else if (ship === 3){
-            unsunkShips.three -= 1;
-        } else if (ship === 4){
-            unsunkShips.four -= 1;
-        } else if (ship === 5){
-            unsunkShips.five -= 1;
-        };
+        switch(ship) {
+            case 2:
+                unsunkShips.two -= 1;
+                break;
+            case 3:
+                unsunkShips.three -= 1;
+                break;
+            case 4:
+                unsunkShips.four -= 1;
+                break;
+            case 5:
+                unsunkShips.five -= 1;
+                break;
+        }
     };
 
     // this will attack a known ship
@@ -347,7 +349,22 @@ const Player = (ai, name = "Computer") => {
         };
         for (let i = 0; i < options.length; i++){
             if (isOptional(options[i])){
-                knownShip.push(options[i]);
+                if (hardBoard.length !== 0){
+                    if (isHardBoard(options[i])){
+                        knownShip.push(options[i]);
+                    };
+                } else {
+                    knownShip.push(options[i]);
+                };
+            };
+        };
+    };
+
+    // this will check if it is an available option in the hard board
+    const isHardBoard = (coordinates) => {
+        for (let i = 0; i < hardBoard.length; i++){
+            if (hardBoard[i][0] === coordinates[0] && hardBoard[i][1] === coordinates[1]){
+                return hardBoard[i][2] !== 0;
             };
         };
     };

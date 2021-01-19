@@ -1,4 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+let Ship = require('./ship');
+Ship = Ship.Ship;
+
 const Gameboard = () => {
 
     // keeps track of occupied area
@@ -50,6 +53,79 @@ const Gameboard = () => {
         // the ship is placed on board
         occupied.push(newShip);
         return true;
+    };
+
+    const checkSpot = (ship, xCoordinate, yCoordinate, vertical) => {
+        // will hold the new ships coordinates until it is ready to be placed
+        let newShip = [];
+        // keeps track of the ship's size
+        let shipSize = ship.showSize();
+
+        // checks to make sure the coordinates are positive if not does not place the ship
+        if (!positiveChecker(xCoordinate, yCoordinate)) {
+            return false;
+        };
+        
+        // places the ship as long as all the coordinates remains in bounds
+        if (vertical) {
+            if (boundChecker(shipSize, yCoordinate)) {
+                for (let i = 0; i < shipSize; i++){
+                    if (emptyChecker([xCoordinate, yCoordinate + i])){
+                        newShip.push([xCoordinate, yCoordinate + i]);
+                    } else {
+                        return false;
+                    };
+                };
+            } else {
+                return false;
+            };
+        } else {
+            if (boundChecker(shipSize, xCoordinate)) {
+                for (let i = 0; i < shipSize; i++){
+                    if (emptyChecker([xCoordinate + i, yCoordinate])){
+                        newShip.push([xCoordinate + i, yCoordinate]);
+                    } else {
+                        return false;
+                    };
+                };
+            } else {
+                return false;
+            };
+        };
+        return [ship, xCoordinate, yCoordinate, vertical];
+    };
+
+    // this will choose random coordinates for ship placement
+    const randomPlacement = () => {
+        for (let i = 5; i > 1; i--) {
+            let size = showOptions(Ship(i));
+            let random = randomSelect(size.length);
+            place(size[random][0], size[random][1], size[random][2], size[random][3]);
+        };
+        const lastsize = showOptions(Ship(3));
+        const lastrandom = randomSelect(lastsize.length);
+        place(lastsize[lastrandom][0], lastsize[lastrandom][1], lastsize[lastrandom][2], lastsize[lastrandom][3]);
+    };
+
+    // this will select a random option
+    const randomSelect = (source) => {
+        return Math.floor(Math.random() * Math.floor(source))
+    };
+
+    // this will show the options available for ship placement
+    const showOptions = (ship) => {
+        acceptable = [];
+        for (let i = 0; i < 10; i++){
+            for (let ii = 0; ii < 10; ii++){
+                if (checkSpot(ship, i, ii, true)){
+                    acceptable.push(checkSpot(ship, i, ii, true));
+                };
+                if (checkSpot(ship, i, ii, false)){
+                    acceptable.push(checkSpot(ship, i, ii, false));
+                };
+            };
+        };
+        return acceptable
     };
 
     // checks to see if the ship would be out of bounds
@@ -171,12 +247,12 @@ const Gameboard = () => {
         return (sunk() === occupied.length);
     };
 
-    return {place, ships, receiveAttack, showAttacks, sunk, allSunk, occupied}
+    return {place, ships, receiveAttack, showAttacks, sunk, allSunk, occupied, randomPlacement}
 
 };
 
 module.exports.Gameboard = Gameboard;
-},{}],2:[function(require,module,exports){
+},{"./ship":5}],2:[function(require,module,exports){
 
 let Player = require('./player');
 Player = Player.Player;
@@ -330,6 +406,9 @@ const Gamedom = () => {
 
     // this will be the computer move in single player mode
     const computerMove = (level) => {
+        if (winLoop(player2, player1)) {
+            return;
+        };
         let move = player2.autoAttack(player1, level);
         if (move[0] && Array.isArray(move[1])) {
             markComputerSquare(move[2], "red");
@@ -455,10 +534,21 @@ const Gamedom = () => {
 
     // this will hold the test package
     const testPackage = () => {
-        testBoardSetUp(player1);
-        testBoardSetUp(player2);
+        player1.gameboard.randomPlacement();
+        player2.gameboard.randomPlacement();
         generateBoard();
         generateSecondBoard();
+        markOccupied(player1);
+    };
+
+    // mark the occupied squares with the color blue
+    const markOccupied = (player) => {
+        let positions = player.gameboard.occupied;
+        for (let i = 0; i < positions.length; i++){
+            for (let ii = 0; ii < positions[i].length - 1; ii++){
+                markComputerSquare(positions[i][ii], "blue");
+            }
+        };
     };
 
 
@@ -507,14 +597,11 @@ const Player = (ai, name = "Computer") => {
         hardPatternBoard();
         shipPointAdder();
         let randomNumber = hardBoardTotal();
-        console.log(unsunkShips);
-        console.log(randomNumber);
         let random = randomAttack(randomNumber);
         console.log(random);
         let attack = findAttack(random);
         let result = enemy.gameboard.receiveAttack(attack[0], attack[1]);
         result.push([attack[0], attack[1]]);
-        console.log([attack[0], attack[1]]);
         return result;
     };
 
@@ -733,15 +820,20 @@ const Player = (ai, name = "Computer") => {
 
     // this will destory a ship 
     const destroyedShip = (ship) => {
-        if (ship === 2){
-            unsunkShips.two -= 1;
-        } else if (ship === 3){
-            unsunkShips.three -= 1;
-        } else if (ship === 4){
-            unsunkShips.four -= 1;
-        } else if (ship === 5){
-            unsunkShips.five -= 1;
-        };
+        switch(ship) {
+            case 2:
+                unsunkShips.two -= 1;
+                break;
+            case 3:
+                unsunkShips.three -= 1;
+                break;
+            case 4:
+                unsunkShips.four -= 1;
+                break;
+            case 5:
+                unsunkShips.five -= 1;
+                break;
+        }
     };
 
     // this will attack a known ship
@@ -829,7 +921,22 @@ const Player = (ai, name = "Computer") => {
         };
         for (let i = 0; i < options.length; i++){
             if (isOptional(options[i])){
-                knownShip.push(options[i]);
+                if (hardBoard.length !== 0){
+                    if (isHardBoard(options[i])){
+                        knownShip.push(options[i]);
+                    };
+                } else {
+                    knownShip.push(options[i]);
+                };
+            };
+        };
+    };
+
+    // this will check if it is an available option in the hard board
+    const isHardBoard = (coordinates) => {
+        for (let i = 0; i < hardBoard.length; i++){
+            if (hardBoard[i][0] === coordinates[0] && hardBoard[i][1] === coordinates[1]){
+                return hardBoard[i][2] !== 0;
             };
         };
     };

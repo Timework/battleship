@@ -19,6 +19,9 @@
     grid-template-rows: repeat(10, 1fr);
 }
 
+.blue {
+    background-color: blue;
+}
 
 .green {
     background-color: green;

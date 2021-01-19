@@ -151,13 +151,16 @@ const Gamedom = () => {
 
     // this will be the computer move in single player mode
     const computerMove = (level) => {
-        let move = player2.autoAttack(player1, level);
         if (winLoop(player2, player1)) {
             return;
         };
+        let move = player2.autoAttack(player1, level);
         if (move[0] && Array.isArray(move[1])) {
             markComputerSquare(move[2], "red");
             markComputerSurrounding(move[1]);
+            if (winLoop(player2, player1)) {
+                return;
+            };
             computerMove(level);
         } else if (move[0] && move[1]) {
             markComputerSquare(move[2], "red");
@@ -276,10 +279,21 @@ const Gamedom = () => {
 
     // this will hold the test package
     const testPackage = () => {
-        testBoardSetUp(player1);
-        testBoardSetUp(player2);
+        player1.gameboard.randomPlacement();
+        player2.gameboard.randomPlacement();
         generateBoard();
         generateSecondBoard();
+        markOccupied(player1);
+    };
+
+    // mark the occupied squares with the color blue
+    const markOccupied = (player) => {
+        let positions = player.gameboard.occupied;
+        for (let i = 0; i < positions.length; i++){
+            for (let ii = 0; ii < positions[i].length - 1; ii++){
+                markComputerSquare(positions[i][ii], "blue");
+            }
+        };
     };
 
 
