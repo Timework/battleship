@@ -149,8 +149,12 @@ const Gamedom = () => {
         };
     };
 
+    // this will set a time delay
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+
     // this will be the computer move in single player mode
-    const computerMove = (level) => {
+    const computerMove = async (level) => {
+        await delay(250);
         if (winLoop(player2, player1)) {
             return;
         };

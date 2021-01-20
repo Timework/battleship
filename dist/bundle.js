@@ -404,8 +404,12 @@ const Gamedom = () => {
         };
     };
 
+    // this will set a time delay
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+
     // this will be the computer move in single player mode
-    const computerMove = (level) => {
+    const computerMove = async (level) => {
+        await delay(250);
         if (winLoop(player2, player1)) {
             return;
         };
@@ -590,6 +594,7 @@ const Player = (ai, name = "Computer") => {
     };
     let hitCounter = 0;
     let hardBoard = [];
+    let originalShip = [];
 
     // this will do the attack for the very hard mode
     const hardAttack = (enemy) => {
@@ -597,12 +602,46 @@ const Player = (ai, name = "Computer") => {
         hardPatternBoard();
         shipPointAdder();
         let randomNumber = hardBoardTotal();
-        let random = randomAttack(randomNumber);
-        console.log(random);
-        let attack = findAttack(random);
+        let attack = "";
+        if (randomNumber <= 1240) {
+            attack = highestAttack();
+        } else {
+            let random = randomAttack(randomNumber);
+            attack = findAttack(random);
+        };
         let result = enemy.gameboard.receiveAttack(attack[0], attack[1]);
         result.push([attack[0], attack[1]]);
         return result;
+    };
+
+    // this will select one of the options for the highest chance of hitting
+    const highestAttack = () => {
+        let source = hardBoardHighestAttacks();
+        let random = randomAttack(source.length);
+        return [source[random][0], source[random][1]];
+    };
+
+    // this will find the attacks that share the most options
+    const hardBoardHighestAttacks = () => {
+        let high = hardBoardHighest();
+        let answer = [];
+        hardBoard.forEach((x) => {
+            if (x[2] === high){
+                answer.push([x[0], x[1]]);
+            };
+        });
+        return answer
+    };
+
+    // this will find the space with the most options
+    const hardBoardHighest = () => {
+        let total = 0;
+        hardBoard.forEach((x) => {
+            if (x[2] > total){
+                total = x[2];
+            };
+        });
+        return total;
     };
 
     // this will find the attack for very hard mode
@@ -864,11 +903,117 @@ const Player = (ai, name = "Computer") => {
             knowny = false;
             knownx = false;
             firstContact = "";
+            originalShip = [];
             updateKnownAttacks();
+        } else {
+            if (hitCounter >= 1) {
+                if (oppositePresent(result[2])[0]){
+                    let sample = oppositePresent(result[2])[1]
+                    console.log(sample);
+                    removeKnown(sample);
+                };
+            };
         };
         return result;
     };
 
+    // this will remove an attack from known attack spots
+    const removeKnown = (coordinates) => {
+        let newKnown = [];
+        knownShip.forEach((x) => {
+            if (x[0] === coordinates[0] && x[1] === coordinates[1]){
+                
+            } else {
+                newKnown.push(x);
+            };
+        });
+        knownShip = newKnown;
+    };
+
+    // this will check if the other side of the knownship attack is available
+    const oppositePresent = (coordinates) => {
+        if (unsunkShips.two === 1) {
+            return [false];
+        };
+        if (!isOrigin(coordinates)){
+            return [false];
+        };
+        let small = smallestShip();
+        let result = "";
+        if (coordinates[0] === firstContact[0]) {
+            if (coordinates[1] > firstContact[1]){
+                result = [coordinates[0], firstContact[1] - 1];
+                console.log("vertical negative");
+                return shipCheck(result, true, false, small);
+            } else {
+                result = [coordinates[0], firstContact[1] + 1];
+                console.log("vertical positive");
+                return shipCheck(result, true, true, small);
+            };
+        } else {
+            if (coordinates[0] > firstContact[0]){
+                result = [firstContact[0] - 1, coordinates[1]];
+                console.log("horiztonal negative");
+                return shipCheck(result, false, false, small);
+            } else {
+                result = [firstContact[0] + 1, coordinates[1]];
+                console.log("horiztonal positive");
+                return shipCheck(result, false, true, small);
+            };
+        };
+    };
+
+    // this will check if all are optional
+    const allOptional = (x) => isOptional(x);
+
+    // this will check to see if all the positions of the ship is possible
+    const shipCheck = (origin, vertical, positive, size) => {
+        let answer = [];
+        if (vertical) {
+            if (positive) {
+                for (let i = 0; i < size - 1; i++){
+                    answer.push([origin[0], origin[1] + i]);
+                };
+            } else {
+                for (let i = 0; i < size - 1; i++){
+                    answer.push([origin[0], origin[1] - i]);
+                };
+            };
+        } else {
+            if (positive) {
+                for (let i = 0; i < size - 1; i++){
+                    answer.push([origin[0] + i, origin[1]]);
+                };
+            } else {
+                for (let i = 0; i < size - 1; i++){
+                    answer.push([origin[0] - i, origin[1]]);
+                };
+            };
+        };
+        let result = answer.every(allOptional);
+        return [!result, origin]
+    };
+
+    // this will find the smallest ship size
+    const smallestShip = () => {
+        if (unsunkShips.three >= 1){
+            return 3;
+        } else if (unsunkShips.four >= 1){
+            return 4;
+        } else {
+            return 5;
+        };
+    };
+
+    // this will check if the coordinates are in the original spots
+    const isOrigin = (coordinates) => {
+        for (let i = 0; i < originalShip.length; i++){
+            if (originalShip[i][0] === coordinates[0] && originalShip[i][1] === coordinates[1]) {
+                return true;
+            };
+        };
+        return false;
+    };
 
     // this will choose y-axis or x-axis depending on the coordinates
     const computerIntelligence = (coordinates) => {
@@ -915,6 +1060,10 @@ const Player = (ai, name = "Computer") => {
     // this will mark the available known ship locations
     const markKnownShip = (coordinates) => {
         let options = [];
+        let markOriginal = false
+        if (originalShip.length === 0) {
+            markOriginal = true
+        };
         for (let i = -1; i < 2; i+=2){
             options.push([coordinates[0] + i, coordinates[1]]);
             options.push([coordinates[0], coordinates[1] + i]);
@@ -922,8 +1071,21 @@ const Player = (ai, name = "Computer") => {
         for (let i = 0; i < options.length; i++){
             if (isOptional(options[i])){
                 if (hardBoard.length !== 0){
-                    if (isHardBoard(options[i])){
+                    if (unsunkShips.two >= 1){
                         knownShip.push(options[i]);
+                        if (markOriginal) {
+                            originalShip.push(options[i]);
+                        };
+                    } else {
+                        let size = smallestShip();
+                        if (markOriginal) {
+                            if (viableOption(options[i], size)){
+                                knownShip.push(options[i]);
+                                originalShip.push(options[i]);
+                            };
+                        } else {
+                            knownShip.push(options[i]);
+                        };
                     };
                 } else {
                     knownShip.push(options[i]);
@@ -933,12 +1095,41 @@ const Player = (ai, name = "Computer") => {
     };
 
     // this will check if it is an available option in the hard board
-    const isHardBoard = (coordinates) => {
-        for (let i = 0; i < hardBoard.length; i++){
-            if (hardBoard[i][0] === coordinates[0] && hardBoard[i][1] === coordinates[1]){
-                return hardBoard[i][2] !== 0;
+    const viableOption = (coordinates, size) => {
+        if (coordinates[0] === firstContact[0]){
+            return isViable(true, size);
+        } else {
+            return isViable(false, size);
+        };
+    };
+
+    // this will check if it is possible for a ship to be in the vertical or horizontal coorindates
+    const isViable = (vertical, size) => {
+        let count = 1;
+        if (vertical) {
+            let sample = [firstContact[0], firstContact[1] + 1];
+            while (isOptional(sample)) {
+                count += 1;
+                sample[1] += 1;
+            };
+            let secondsample = [firstContact[0], firstContact[1] - 1];
+            while (isOptional(secondsample)) {
+                count += 1;
+                secondsample[1] -= 1;
+            };
+        } else {
+            let sample = [firstContact[0] + 1, firstContact[1]];
+            while (isOptional(sample)) {
+                count += 1;
+                sample[0] += 1;
+            };
+            let secondsample = [firstContact[0] - 1, firstContact[1]];
+            while (isOptional(secondsample)) {
+                count += 1;
+                secondsample[0] -= 1;
             };
         };
+        return count >= size;
     };
 
     // this will check if a move is possible
