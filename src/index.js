@@ -9,3 +9,4 @@ Gamedom = Gamedom.Gamedom;
 Ship = Ship.Ship;
 
 const game = Gamedom();
+

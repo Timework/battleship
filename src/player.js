@@ -333,7 +333,6 @@ const Player = (ai, name = "Computer") => {
             if (hitCounter >= 1) {
                 if (oppositePresent(result[2])[0]){
                     let sample = oppositePresent(result[2])[1]
-                    console.log(sample);
                     removeKnown(sample);
                 };
             };
@@ -367,21 +366,17 @@ const Player = (ai, name = "Computer") => {
         if (coordinates[0] === firstContact[0]) {
             if (coordinates[1] > firstContact[1]){
                 result = [coordinates[0], firstContact[1] - 1];
-                console.log("vertical negative");
                 return shipCheck(result, true, false, small);
             } else {
                 result = [coordinates[0], firstContact[1] + 1];
-                console.log("vertical positive");
                 return shipCheck(result, true, true, small);
             };
         } else {
             if (coordinates[0] > firstContact[0]){
                 result = [firstContact[0] - 1, coordinates[1]];
-                console.log("horiztonal negative");
                 return shipCheck(result, false, false, small);
             } else {
                 result = [firstContact[0] + 1, coordinates[1]];
-                console.log("horiztonal positive");
                 return shipCheck(result, false, true, small);
             };
         };

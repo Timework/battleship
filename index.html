@@ -14,24 +14,47 @@
             <button type="button" id="toTwoPlayer">Two Players</button>
         </div>
         <div id="firstPlayerForm">
+            <button type="button" id="goBackSingle">Back Arrow</button>
             <label for="firstPlayer">Player 1's name</label>
-            <input type="text" name="firstPlayer" id="firstPlayer">
+            <input type="text" name="firstPlayer" id="firstPlayer" required>
             <input type="radio" id="easy" name="difficulty" value="1">
             <label for="easy">Easy</label>
             <input type="radio" id="medium" name="difficulty" value="2">
             <label for="medium">Medium</label>
             <input type="radio" id="hard" name="difficulty" value="3">
             <label for="hard">Hard</label>
-            <input type="radio" id="veryhard" name="difficulty" value="4">
+            <input type="radio" id="veryhard" name="difficulty" value="4" checked="checked">
             <label for="veryhard">Very Hard</label>
             <button type="button" id="makeSinglePlayer">One Player</button>
         </div>
         <div id="twoPlayerForm">
+            <button type="button" id="goBackDouble">Back Arrow</button>
             <label for="onePlayer">Player 1's name</label>
             <input type="text" name="onePlayer" id="onePlayer">
             <label for="twoPlayer">Player 2's name</label>
             <input type="text" name="twoPlayer" id="twoPlayer">
             <button type="button" id="makeTwoPlayers">Two Players</button>
+        </div>
+        <div id="placementForm">
+            <div id="testDiv">
+                <div id="placementBoard"></div>
+                <button type="button" id="startSingleGame" disabled="true">Start Game</button>
+                <div>
+                    <div class="blue" id="fiveShip" draggable="true" value="5"></div>
+                </div>
+                <div>
+                    <div class="blue" id="fourShip" draggable="true" value="4"></div>
+                </div>
+                <div>
+                    <div class="blue" id="threeShipTwo" draggable="true" value="2"></div>
+                </div>
+                <div>
+                    <div class="blue" id="twoShip" draggable="true" value="1"></div>
+                </div>
+                <div>
+                    <div class="blue" id="threeShip" draggable="true" value="3"></div>
+                </div>
+            </div>
         </div>
         <div class="flex">
             <div id="board"></div>

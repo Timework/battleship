@@ -5,15 +5,68 @@ Player = Player.Player;
 let Ship = require('./ship');
 Ship = Ship.Ship;
 
+let Draggable = require ('Draggable');
+
 
 const Gamedom = () => {
-    // this will tell you if there is an ai in the game
-    let ai = false;
 
     // declaring the players
     let player1;
     let player2;
     let difficulty;
+    let shipPositions = [
+        {id: "1",
+        vertical: false,
+        options: [],
+        size: 2,
+        name: "twoShip",
+        color: "blue",
+        body: [],
+        x: null,
+        y: null,
+        },
+        {id: "2",
+        vertical: false,
+        options: [],
+        size: 3,
+        name: "threeShipTwo",
+        color: "blue",
+        body: [],
+        x: null,
+        y: null,
+        },
+        {id: "3",
+        vertical: false,
+        options: [],
+        size: 3,
+        name: "threeShip",
+        color: "blue",
+        body: [],
+        x: null,
+        y: null,
+        },
+        {id: "4",
+        vertical: false,
+        options: [],
+        size: 4,
+        name: "fourShip",
+        color: "blue",
+        body: [],
+        x: null,
+        y: null,
+        },
+        {id: "5",
+        vertical: false,
+        options: [],
+        size: 5,
+        name: "fiveShip",
+        color: "blue",
+        body: [],
+        x: null,
+        y: null,
+        },
+    ];
+    let allClear = false;
 
     // runs in the beginning of a game
     const init = () => {
@@ -21,7 +74,17 @@ const Gamedom = () => {
             chooseForm();
             singlePlayerForm();
             twoPlayerForm();
+            goBackButtons();
+            startSingleGame();
         };
+    };
+
+    // this will start the game of the single player mode
+    const startSingleGame = () => {
+        const beginning = document.getElementById("startSingleGame");
+        beginning.addEventListener("click", () => {
+            testPackage();
+        });
     };
 
     // program the ability to choose from single player or multiplayer
@@ -36,6 +99,18 @@ const Gamedom = () => {
         });
     };
 
+    // this will give the buttons the ability to go back
+    const goBackButtons = () => {
+       const single = document.getElementById("goBackSingle");
+       const double = document.getElementById("goBackDouble");
+       single.addEventListener("click", () => {
+           goBack("firstPlayerForm");
+       });
+       double.addEventListener("click", () => {
+        goBack("twoPlayerForm");
+    });
+
+    };
     // this will show the two player form while hiding the original form
     const twoPlayerFormReveal = () => {
         hideForm("computerOrPlayerForm");
@@ -46,6 +121,18 @@ const Gamedom = () => {
     const singlePlayerFormReveal = () => {
         hideForm("computerOrPlayerForm");
         showForm("firstPlayerForm");
+    };
+
+    // this will go back to the computer or player form
+    const goBack = (formName) => {
+        hideForm(formName);
+        showForm("computerOrPlayerForm");
+    };
+
+    // this will show the placement form
+    const showPlacementForm = () => {
+        showForm("placementForm");
+        generatePlacementBoard();
     };
 
     // this will hide the from you choose
@@ -112,7 +199,7 @@ const Gamedom = () => {
         player2 = Player(true);
         ai = true;
         difficulty = setDifficulty();
-        testPackage();
+        showPlacementForm();
     };
 
     // launches single player mode
@@ -124,6 +211,9 @@ const Gamedom = () => {
     // this will be how the first player attacks
     const singlePlayerAttack = (coordinates) => {
         clearMessage("error");
+        if (winLoop(player1, player2)) {
+            return;
+        };
         let result = player1.attack(player2, coordinates[0], coordinates[1]);
         if (winLoop(player1, player2)) {
             markSquare(coordinates, "red");
@@ -272,22 +362,43 @@ const Gamedom = () => {
         holder.innerHTML = "";
     };
 
-    // will set up ships on the board determinded testing purposes only
-    const testBoardSetUp = (player) => {
-        player.gameboard.place(Ship(2), 2, 2, true);
-        player.gameboard.place(Ship(3), 4, 4, true);
-        player.gameboard.place(Ship(3), 9, 6, true);
-        player.gameboard.place(Ship(4), 4, 8, false);
-        player.gameboard.place(Ship(5), 0, 0, false);
-    };
-
     // this will hold the test package
     const testPackage = () => {
-        player1.gameboard.randomPlacement();
+        hideForm("placementForm");
+        placePlayerShips(player1, shipPositions);
         player2.gameboard.randomPlacement();
         generateBoard();
         generateSecondBoard();
         markOccupied(player1);
+    };
+
+    // this will place all the player ships
+    const placePlayerShips = (player, ownShips) => {
+        for (let i = 0; i < ownShips.length; i++){
+            let ship  = determineShipSize(ownShips[i].id);
+            player.gameboard.place(ship, ownShips[i].x, ownShips[i].y, ownShips[i].vertical);
+        };
+    };
+
+    // this will determine the ship size
+    const determineShipSize = (size) => {
+        switch(size) {
+            case "1":
+                return Ship(2);
+                break;
+            case "2":
+                return Ship(3);
+                break;
+            case "3":
+                return Ship(3);
+                break;
+            case "4":
+                return Ship(4);
+                break;
+            case "5":
+                return Ship(5);
+                break;
+        };
     };
 
     // mark the occupied squares with the color blue
@@ -296,10 +407,179 @@ const Gamedom = () => {
         for (let i = 0; i < positions.length; i++){
             for (let ii = 0; ii < positions[i].length - 1; ii++){
                 markComputerSquare(positions[i][ii], "blue");
-            }
+            };
         };
     };
 
+    // this will be the code to drag the ship container
+    const dragShip = () => {
+        let ships = ["twoShip", "threeShip", "threeShipTwo", "fourShip", "fiveShip"];
+        for (let i = 0; i < ships.length; i++){
+            let ship = document.getElementById(ships[i]);
+            let options = {
+                grid: 50,
+                limit: document.getElementById("placementBoard"),
+                onDragEnd: dragEnd,
+            };
+            let drag = new Draggable (ship, options);
+            ship.addEventListener("dblclick", () => {
+                goVertical(ships[i], drag);
+            });
+        };
+    };
+
+    // this will mark the surrounding area of the ship
+    const tempSurrounding = (name) => {
+        let ship = document.getElementById(name);
+        let options = [];
+        let body = [];
+        let sample = ship.getAttribute("value");
+        let num;
+        for (let i = 0; i < shipPositions.length; i++){
+            if (shipPositions[i].id === sample) {
+                num = i;
+            };
+        };
+        let specs;
+        if (shipPositions[num].vertical) {
+            specs = [true, shipPositions[num].size];
+        } else {
+            specs = [false, shipPositions[num].size];
+        };
+        let x = shipPositions[num].x
+        let y = shipPositions[num].y
+        if (specs[0]) {
+            for (let i = 0; i < specs[1]; i++){
+                let tempy = y + i;
+                body.push(`${x}${tempy}`);
+                for (let ii = -1; ii < 2; ii++){
+                    for (let iii = -1; iii < 2; iii++){
+                        options.push(`${x + iii}${tempy + ii}`);
+                    };
+                };
+            };
+        } else {
+            for (let i = 0; i < specs[1]; i++){
+                let tempx = x + i;
+                body.push(`${tempx}${y}`);
+                for (let ii = -1; ii < 2; ii++){
+                    for (let iii = -1; iii < 2; iii++){
+                        options.push(`${tempx + iii}${y + ii}`);
+                    };
+                };
+            };
+        };
+        shipPositions[num].options = options;
+        shipPositions[num].body = body;
+    };
+
+
+    // this will change a ship to vertical
+    const goVertical = (shipName, drag) => {
+        let ship = document.getElementById(shipName);
+        let sample = ship.getAttribute("value");
+        let width = ship.style.width;
+        let height = ship.style.height;
+        ship.style.width = height;
+        ship.style.height = width;
+        let num;
+        for (let i = 0; i < shipPositions.length; i++){
+            if (shipPositions[i].id === sample) {
+                num = i;
+            };
+        };
+        shipPositions[num].vertical = !shipPositions[num].vertical
+        drag["_dimensions"]["height"] = width;
+        drag["_dimensions"]["width"] = height;
+        drag.setOption('limit', document.getElementById("placementBoard"));
+        let x = drag["_dimensions"]["left"];
+        let y = drag["_dimensions"]["top"];
+        if (shipPositions[num].vertical && drag["_dimensions"]["top"] > 500 - drag["_dimensions"]["height"]){
+            drag.set(drag["_dimensions"]["left"], 500 - drag["_dimensions"]["height"]);
+            y = 500 - drag["_dimensions"]["height"];
+        } else if (!(shipPositions[num].vertical) && drag["_dimensions"]["left"] > 500 - drag["_dimensions"]["width"]){
+            drag.set(500 - drag["_dimensions"]["width"], drag["_dimensions"]["top"]);
+            x = 500 - drag["_dimensions"]["width"]
+        };
+        updateShipPosition(ship.getAttribute("value"), x, y);
+        tempSurrounding(ship.getAttribute("id"));
+        changeColor();
+        updateColor();
+        toggleDisable();
+    };
+
+    // this will update the colors of the moving ships
+    const updateColor = () => {
+        for (let i = 0; i < shipPositions.length; i++){
+            ship = document.getElementById(shipPositions[i].name);
+            ship.className = '';
+            ship.classList.add(shipPositions[i].color);
+        };
+    };
+
+    const toggleDisable = () => {
+        let shouldDisable = false
+        for (let i = 0; i < shipPositions.length; i++){
+            if (shipPositions[i].color === "red" || shipPositions[i].x === null){
+                shouldDisable = true;
+            };
+        };
+        document.getElementById("startSingleGame").disabled = shouldDisable;
+    };
+
+
+    // code for the drag end
+    const dragEnd = (element, x, y) => {
+        updateShipPosition(element.getAttribute("value"), x, y);
+        tempSurrounding(element.getAttribute("id"));
+        changeColor();
+        updateColor();
+        toggleDisable();
+    };
+
+    // this will change the color of the ships
+    const changeColor = () => {
+        for (let i = 0; i < shipPositions.length; i++){
+            let color = "blue";
+            for (let ii = 0; ii < shipPositions[i].options.length; ii++){
+                for (let iii = 0; iii < shipPositions.length; iii++){
+                    if (i !== iii){
+                        if (shipPositions[iii].body.includes(shipPositions[i].options[ii])) {
+                            color = "red";
+                        };
+                    };
+                };
+            };
+            shipPositions[i].color = color;
+        };
+    };
+
+    // will update the ship positions
+    const updateShipPosition = (value, x, y) => {
+        let num;
+        for (let i = 0; i < shipPositions.length; i++){
+            if (shipPositions[i].id === value) {
+                num = i;
+            };
+        };
+        shipPositions[num].x = x/50;
+        shipPositions[num].y = y/50;
+    };
+
+
+    // this will generate the placement board
+    const generatePlacementBoard = () => {
+        const board = document.getElementById("placementBoard");
+        for (let i = 0; i <= 9; i++){
+            for (let ii = 0; ii <= 9; ii++){
+                let square = document.createElement("div");
+                square.id = `p, ${ii}, ${i}`
+                square.classList.add("square");
+                board.appendChild(square);
+            };
+        };
+        dragShip();
+    };
 
     init ();
     return {twoPlayer, players, onePlayer, singlePlayer};
