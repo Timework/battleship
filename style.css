@@ -1,3 +1,7 @@
+html {
+    background-color: #0C0032;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -7,17 +11,31 @@ body {
     display: none;
 }
 
+#firstPlayerForm {
+    position: absolute;
+    width: 500px;
+    height:250px;
+    border: 1px solid #3500D3;
+    top: 25%;
+    left: 50%;
+    margin-left: -250px;
+}
+
 .square {
-    border: 1px solid black;
+    border: 1px solid #3500D3;
 }
 
 #board, #board1 {
     margin: 20px;
     display: grid;
-    width: 40%;
+    width: 500px;
     height: 500px;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
+}
+
+#board:hover {
+    cursor: crosshair;
 }
 
 #placementBoard {
@@ -40,31 +58,42 @@ body {
 #fiveShip {
     width: 250px;
     height: 50px;
+    border: 3px solid black;
+    box-sizing: border-box;
 }
 
 #fourShip {
     width: 200px;
     height: 50px;
+    border: 3px solid black;
+    box-sizing: border-box;
 }
 
 #threeShip {
     width: 150px;
     height: 50px;
+    border: 3px solid black;
+    box-sizing: border-box;
 }
 
 #threeShipTwo {
     width: 150px;
     height: 50px;
+    border: 3px solid black;
+    box-sizing: border-box;
 }
 
 #twoShip {
     width: 100px;
     height: 50px;
+    border: 3px solid black;
+    box-sizing: border-box;
 }
 
 .red {
     background-color: red;
 }
+
 .flex {
     display: flex;
 }
@@ -75,6 +104,58 @@ body {
     position: relative;
 }
 
-.rotate {
-    transform: rotate(90deg);
+
+#absolute {
+    position: absolute;
+    height: 100vh;
+    width: 100%;
+    z-index: 10;
+    display: none;
 }
+
+label, #result {
+    color: white;
+}
+
+/* this button design is taken from https://1stwebdesigner.com/20-amazing-pure-css-animated-buttons/ 3.More Animated CSS Buttons */
+.btn{
+    position: relative;
+    display: block;
+    color: white;
+    font-size: 14px;
+    font-family: "montserrat";
+    text-decoration: none;
+    margin: 30px 0;
+    border: 2px solid #3500D3;
+    padding: 14px 60px;
+    text-transform: uppercase;
+    overflow: hidden;
+    transition: 1s all ease;
+    text-align: center;
+    width: 100px;
+    margin: 0 auto;
+  }
+  .btn::before{
+    background: #3500D3;
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    z-index: -1;
+    transition: all 0.6s ease;
+  }
+
+  .btn1::before{
+    width: 100%;
+    height: 0%;
+  }
+  .btn1:hover::before{
+    height: 100%;
+  }
+
+  .btn-holder{
+    position: absolute;
+    margin: 500px;
+    transform: translate(-50%,-50%);
+  }

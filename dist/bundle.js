@@ -407,7 +407,11 @@ const Gamedom = () => {
     // program single player start up
     const singlePlayerForm = () => {
         const first = document.getElementById("makeSinglePlayer");
-        first.addEventListener('click', () => { singlePlayerGame() });
+        first.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            singlePlayerGame();
+            return false;
+        });
     };
 
     // program two player start up
@@ -454,7 +458,6 @@ const Gamedom = () => {
     const onePlayer = (first) => {
         player1 = Player(false, first);
         player2 = Player(true);
-        ai = true;
         difficulty = setDifficulty();
         showPlacementForm();
     };
@@ -462,11 +465,16 @@ const Gamedom = () => {
     // launches single player mode
     const singlePlayer = () => {
         let name = document.getElementById("firstPlayer").value;
+        if (name === ""){
+            name = "Player";
+        };
         onePlayer(name);
     };
 
     // this will be how the first player attacks
-    const singlePlayerAttack = (coordinates) => {
+    const singlePlayerAttack = async (coordinates) => {
+        let stopper = document.getElementById("absolute");
+        stopper.style.display = "block";
         clearMessage("error");
         if (winLoop(player1, player2)) {
             return;
@@ -480,11 +488,10 @@ const Gamedom = () => {
         if (result[0] && Array.isArray(result[1])) {
             markSquare(coordinates, "red");
             markSurrounding(result[1]);
+            stopper.style.display = "none";
         } else if (result[0] && result[1]) {
             markSquare(coordinates, "red");
-            if (winLoop(player2, player1)) {
-                return;
-            };
+            stopper.style.display = "none";
         } else if (result[0]) {
             markSquare(coordinates, "green");
             computerMove(difficulty);
@@ -493,6 +500,7 @@ const Gamedom = () => {
             };
         } else {
             errorMessage("That space has already been attacked");
+            stopper.style.display = "none";
         };
     };
 
@@ -501,6 +509,7 @@ const Gamedom = () => {
 
     // this will be the computer move in single player mode
     const computerMove = async (level) => {
+        let stopper = document.getElementById("absolute");
         await delay(250);
         if (winLoop(player2, player1)) {
             return;
@@ -518,6 +527,7 @@ const Gamedom = () => {
             computerMove(level);
         } else if (move[0]) {
             markComputerSquare(move[2], "green");
+            stopper.style.display = "none";
         } else {
             computerMove(level);
         };
