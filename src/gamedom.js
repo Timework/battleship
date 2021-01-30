@@ -74,9 +74,15 @@ const Gamedom = () => {
             chooseForm();
             singlePlayerForm();
             twoPlayerForm();
-            goBackButtons();
             startSingleGame();
+            initateHeader();
         };
+    };
+
+    // this will trigger the moving text of the header
+    const initateHeader = () => {
+        const header = document.getElementById("headerText");
+        header.style.maxWidth = "100%";
     };
 
     // this will start the game of the single player mode
@@ -99,18 +105,6 @@ const Gamedom = () => {
         });
     };
 
-    // this will give the buttons the ability to go back
-    const goBackButtons = () => {
-       const single = document.getElementById("goBackSingle");
-       const double = document.getElementById("goBackDouble");
-       single.addEventListener("click", () => {
-           goBack("firstPlayerForm");
-       });
-       double.addEventListener("click", () => {
-        goBack("twoPlayerForm");
-    });
-
-    };
     // this will show the two player form while hiding the original form
     const twoPlayerFormReveal = () => {
         hideForm("computerOrPlayerForm");

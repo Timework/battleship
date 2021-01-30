@@ -4,10 +4,15 @@
         <meta charset="UTF-8">
         <title>Battleship</title>
         <link rel="stylesheet" href="style.css">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
         <script src="./dist/bundle.js" defer></script>
     </head>
     <body>
         <div id="absolute"></div>
+        <div class="headerHolder">
+            <div id="headerText">BATTLESHIP</div>
+        </div>  
         <div id="result"></div>
         <div id="error"></div>
         <div id="computerOrPlayerForm">
@@ -15,18 +20,25 @@
             <button type="button" id="toTwoPlayer">Two Players</button>
         </div>
         <div id="firstPlayerForm">
-            <button type="button" id="goBackSingle">Back Arrow</button>
-            <label for="firstPlayer">Player 1's name</label>
-            <input type="text" name="firstPlayer" id="firstPlayer" required>
+            <label for="firstPlayer">Player's Name</label>
+            <br>
+            <input type="text" name="firstPlayer" id="firstPlayer" placeholder="Player" required>
+            <br>
+            <p>Difficulty</p>
             <input type="radio" id="easy" name="difficulty" value="1">
             <label for="easy">Easy</label>
+            <br>
             <input type="radio" id="medium" name="difficulty" value="2">
             <label for="medium">Medium</label>
+            <br>
             <input type="radio" id="hard" name="difficulty" value="3">
             <label for="hard">Hard</label>
+            <br>
             <input type="radio" id="veryhard" name="difficulty" value="4" checked="checked">
             <label for="veryhard">Very Hard</label>
-            <a href="" class="btn btn1" id="makeSinglePlayer">One Player</a>
+            <div class="buttonSpacer"></div>
+            <br>
+            <a href="" class="btn btn1" id="makeSinglePlayer">Start Game</a>
         </div>
         <div id="twoPlayerForm">
             <button type="button" id="goBackDouble">Back Arrow</button>

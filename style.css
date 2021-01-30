@@ -1,28 +1,44 @@
+
+
 html {
     background-color: #0C0032;
+}
+
+p {
+    color: white;
+}
+
+input {
+    margin: 10px 0;
 }
 
 body {
     margin: 0;
     padding: 0;
+    font-family: Helvetica, sans-serif;
 }
 
-#firstPlayerForm, #placementForm, #twoPlayerForm {
+#computerOrPlayerForm, #placementForm, #twoPlayerForm {
     display: none;
 }
 
 #firstPlayerForm {
     position: absolute;
-    width: 500px;
-    height:250px;
+    width: 250px;
+    height:300px;
     border: 1px solid #3500D3;
     top: 25%;
     left: 50%;
-    margin-left: -250px;
+    margin-left: -165px;
+    padding: 40px;
+    background: #190061;
+    z-index: 2;
+    text-align: center;
 }
 
+
 .square {
-    border: 1px solid #3500D3;
+    border: 1px solid #240090;
 }
 
 #board, #board1 {
@@ -44,6 +60,10 @@ body {
     height: 500px;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
+}
+
+.buttonSpacer {
+    height: 10px;
 }
 
 
@@ -96,6 +116,8 @@ body {
 
 .flex {
     display: flex;
+    width: 1080px;
+    margin: 0 auto;
 }
 
 #testDiv {
@@ -115,6 +137,23 @@ body {
 
 label, #result {
     color: white;
+}
+
+#headerText {
+    color: white;
+    text-align: center;
+    width: auto;
+    max-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 86px;
+    transition: max-width 2s linear;
+    font-family: 'Press Start 2P', Helvetica;
+}
+
+.headerHolder {
+    margin: 0 auto;
+    width: 850px;
 }
 
 /* this button design is taken from https://1stwebdesigner.com/20-amazing-pure-css-animated-buttons/ 3.More Animated CSS Buttons */
@@ -154,8 +193,3 @@ label, #result {
     height: 100%;
   }
 
-  .btn-holder{
-    position: absolute;
-    margin: 500px;
-    transform: translate(-50%,-50%);
-  }
