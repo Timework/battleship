@@ -162,6 +162,24 @@ label, #result {
 #headerText {
     font-size: 64px;
 }
+
+#firstPlayerForm{
+    top: 200px;
+}
+}
+
+@media only screen and (max-width: 650px) {
+    .headerHolder {
+        width: 500px;
+    }
+    
+    #headerText {
+        font-size: 48px;
+    }
+
+    #firstPlayerForm{
+        top: 180px;
+    }
 }
 
 
