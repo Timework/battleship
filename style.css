@@ -170,11 +170,11 @@ label, #result {
 
 @media only screen and (max-width: 650px) {
     .headerHolder {
-        width: 500px;
+        width: 400px;
     }
     
     #headerText {
-        font-size: 48px;
+        font-size: 32px;
     }
 
     #firstPlayerForm{
