@@ -20,24 +20,27 @@
             <button type="button" id="toTwoPlayer">Two Players</button>
         </div>
         <div id="firstPlayerForm">
-            <label for="firstPlayer">Player's Name</label>
-            <br>
-            <input type="text" name="firstPlayer" id="firstPlayer" placeholder="Player" required>
-            <br>
-            <p>Difficulty</p>
-            <input type="radio" id="easy" name="difficulty" value="1">
-            <label for="easy">Easy</label>
-            <br>
-            <input type="radio" id="medium" name="difficulty" value="2">
-            <label for="medium">Medium</label>
-            <br>
-            <input type="radio" id="hard" name="difficulty" value="3">
-            <label for="hard">Hard</label>
-            <br>
-            <input type="radio" id="veryhard" name="difficulty" value="4" checked="checked">
-            <label for="veryhard">Very Hard</label>
-            <div class="buttonSpacer"></div>
-            <br>
+            <input type="text" class="form__input" name="firstPlayer" id="firstPlayer" placeholder="Player" required>
+            <div class="container">
+                <ul>
+                    <li>
+                        <input type="radio" id="easy" name="difficulty" value="1">
+                        <label for="easy">Easy</label>
+                    </li>
+                    <li>
+                        <input type="radio" id="medium" name="difficulty" value="2">
+                        <label for="medium">Medium</label>
+                    </li>
+                    <li>
+                        <input type="radio" id="hard" name="difficulty" value="3">
+                        <label for="hard">Hard</label>
+                    </li>
+                    <li>
+                        <input type="radio" id="veryhard" name="difficulty" value="4" checked="checked">
+                        <label for="veryhard">Very Hard</label>
+                    </li>
+                </ul>
+            </div>
             <a href="" class="btn btn1" id="makeSinglePlayer">Start Game</a>
         </div>
         <div id="twoPlayerForm">
