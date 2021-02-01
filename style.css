@@ -318,11 +318,11 @@ label, #result {
     
     @media only screen and (max-width: 650px) {
         .headerHolder {
-            width: 400px;
+            width: 300px;
         }
         
         #headerText {
-            font-size: 32px;
+            font-size: 28px;
         }
     
     }
