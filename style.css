@@ -20,13 +20,11 @@ body {
 }
 
 #firstPlayerForm {
-    position: absolute;
+    position: relative;
     width: 250px;
-    height:350px;
+    height: 350px;
     border: 1px solid #3500D3;
-    top: 300px;
-    left: 50%;
-    margin-left: -165px;
+    margin: 30px auto;
     padding: 40px;
     background: #190061;
     z-index: 2;
@@ -154,33 +152,6 @@ label, #result {
     width: 850px;
 }
 
-@media only screen and (max-width: 1000px) {
-.headerHolder {
-    width: 640px;
-}
-
-#headerText {
-    font-size: 64px;
-}
-
-#firstPlayerForm{
-    top: 200px;
-}
-}
-
-@media only screen and (max-width: 650px) {
-    .headerHolder {
-        width: 400px;
-    }
-    
-    #headerText {
-        font-size: 32px;
-    }
-
-    #firstPlayerForm{
-        top: 180px;
-    }
-}
 
 
 /* this button design is taken from https://1stwebdesigner.com/20-amazing-pure-css-animated-buttons/ 3.More Animated CSS Buttons */
@@ -333,4 +304,26 @@ label, #result {
     -webkit-transform: translateY(-4rem);
     transform: translateY(-4rem);
   }
+
+  @media only screen and (max-width: 1000px) {
+    .headerHolder {
+        width: 640px;
+    }
+    
+    #headerText {
+        font-size: 64px;
+    }
+    
+    }
+    
+    @media only screen and (max-width: 650px) {
+        .headerHolder {
+            width: 400px;
+        }
+        
+        #headerText {
+            font-size: 32px;
+        }
+    
+    }
   
