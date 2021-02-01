@@ -111,8 +111,8 @@ body {
     background-color: red;
 }
 
-.flex {
-    display: flex;
+#flex {
+    display: none;
     width: 1080px;
     margin: 0 auto;
 }

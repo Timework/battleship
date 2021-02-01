@@ -625,9 +625,11 @@ const Gamedom = () => {
 
     // this will hold the test package
     const testPackage = () => {
+        let flexHolder = document.getElementById("flex");
+        flexHolder.style.display = "flex";
         hideForm("placementForm");
         placePlayerShips(player1, shipPositions);
-        player2.gameboard.randomPlacement();
+        player2.gameboard.randomPlacement(); 
         generateBoard();
         generateSecondBoard();
         markOccupied(player1);
