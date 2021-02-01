@@ -159,6 +159,7 @@ const Gamedom = () => {
 
     // single player game start 
     const singlePlayerGame = () => {
+        showForm("instructions");
         hideForm("firstPlayerForm");
         singlePlayer();
     };
@@ -351,6 +352,7 @@ const Gamedom = () => {
     // this will announce the winner
     const announceWinner = (player) => {
         let announcement = document.getElementById('result');
+        showForm("resultHolder");
         announcement.innerHTML = `${player.name} won!`
     };
 
@@ -368,8 +370,7 @@ const Gamedom = () => {
 
     // this will hold the test package
     const testPackage = () => {
-        let flexHolder = document.getElementById("flex");
-        flexHolder.style.display = "flex";
+        showForm("flexHolder")
         hideForm("placementForm");
         placePlayerShips(player1, shipPositions);
         player2.gameboard.randomPlacement(); 

@@ -13,9 +13,20 @@
         <div id="absolute"></div>
         <div class="headerHolder">
             <div id="headerText">BATTLESHIP</div>
+        </div>
+        <div id="instructions">
+            <div class="in_ul">
+                <p>Instructions</p>
+                <p>You cannot place ships next to each other.</p>
+                <p>If you hit a ship you can attack again.</p>
+                <p>Double clicking a ship changes its axis.</p>
+                <p>The placement board is not mobile responsive so you while you can still place ships
+                     and play the game you cannot change the ship's axis during placement on a phone.</p>
+            </div>
         </div>  
-        <div id="result"></div>
-        <div id="error"></div>
+        <div id="resultHolder">
+            <div id="result"></div>
+        </div>
         <div id="computerOrPlayerForm">
             <button type="button" id="toSinglePlayer">One Player</button>
             <button type="button" id="toTwoPlayer">Two Players</button>
@@ -55,7 +66,9 @@
         <div id="placementForm">
             <div id="testDiv">
                 <div id="placementBoard"></div>
-                <button type="button" id="startSingleGame" disabled="true">Start Game</button>
+                <div class="centerButton">
+                    <button type="button" class="startButton" id="startSingleGame" disabled="true">Start Game</button>
+                </div>
                 <div>
                     <div class="blue" id="fiveShip" draggable="true" value="5"></div>
                 </div>
@@ -73,10 +86,14 @@
                 </div>
             </div>
         </div>
-        <div id="flex">
-            <div id="board"></div>
-            <br>
-            <div id="board1"></div>
+        <div id="flexHolder">
+            <div id="flex">
+                <div class="playerBoxHolder">
+                    <div id="board"></div>
+                    <div id="error"></div>
+                </div>
+                <div id="board1"></div>
+            </div>
         </div>
     </body>
 </html>
