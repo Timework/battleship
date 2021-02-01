@@ -16,11 +16,11 @@ Shoots at random all the time regardless if it hits a ship or not.
 
 Medium Difficulty
 
-Shoots at random but if it hits a ship will hit around the area of the hit until the ship is sunk, is not smart enough to know what axis the ship is on based on the hits.
+Shoots at random but if it hits a ship will hit around the area of the hit until the ship is sunk, does know what axis the ship is on based on the hits.
 
 Hard Difficulty
 
-Shoots at random but if it hits a ship will hit around the area of the hit until the ship is sunk, if it lands two hits will know what axis the ship is on and will not longer hit the sides of the ship
+Shoots at random but if it hits a ship will hit around the area of the hit until the ship is sunk, if it lands two hits will know what axis the ship is on and will no longer hit the sides of the ship.
 
 Very Hard Difficulty
 
@@ -34,9 +34,9 @@ Regardless of the attack mode the AI will not attack squares that have a zero po
 
 The AI is also able to determine the axis of the ship based on the successful attacks.
 
-Furthermore the AI will be able to determine whether the ship could be along the axis as all and if it is not then it will not attack squares along that axis. For example, if the smallest ship yet to be sunk is 4 square long and the AI has landed a hit but the y-axis including the spot hit has only room for a 3 square ship then the AI will know that it is not possible for the ship to be along the y-axis and will only attack spots on the x-axis. 
+Furthermore the AI will be able to determine whether the ship could be along the axis as all and if it is not then it will not attack squares along that axis. For example, if the smallest ship yet to be sunk is 4 squares long and the AI has landed a hit but the y-axis including the spot hit has only room for a 3 square ship then the AI will know that it is not possible for the ship to be along the y-axis and will only attack spots on the x-axis. 
 
-The AI will also constantly check to see if the ship can fit on the axis after an attack fails. For example,if the smallest ship not yet sunk is 3 squares and if the x-axis is 5 squares long including the square hit but after a failed attack the x-axis only has room for a two squared ship then the AI will know that the ship cannot be on the x-axis and will only attack spots on the y-axis.
+The AI will also constantly check to see if the ship can fit on the axis after an attack fails. For example,if the smallest ship not yet sunk is 3 squares long and if the x-axis is 5 squares long including the square hit but after a failed attack the x-axis only has room for a two squared ship then the AI will know that the ship cannot be on the x-axis and will only attack spots on the y-axis.
 
 On all difficulties the AI places ships at random, the AI will never do illegal ship placement.
 
