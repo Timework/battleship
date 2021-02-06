@@ -277,53 +277,67 @@ const Gamedom = () => {
         options: [],
         size: 2,
         name: "twoShip",
+        small: "twoShipSmall",
         color: "blue",
         body: [],
         x: null,
         y: null,
+        drags: null,
+        drag: null,
         },
         {id: "2",
         vertical: false,
         options: [],
         size: 3,
         name: "threeShipTwo",
+        small: "threeShipTwoSmall",
         color: "blue",
         body: [],
         x: null,
         y: null,
+        drags: null,
+        drag: null,
         },
         {id: "3",
         vertical: false,
         options: [],
         size: 3,
         name: "threeShip",
+        small: "threeShipSmall",
         color: "blue",
         body: [],
         x: null,
         y: null,
+        drags: null,
+        drag: null,
         },
         {id: "4",
         vertical: false,
         options: [],
         size: 4,
         name: "fourShip",
+        small: "fourShipSmall",
         color: "blue",
         body: [],
         x: null,
         y: null,
+        drags: null,
+        drag: null,
         },
         {id: "5",
         vertical: false,
         options: [],
         size: 5,
         name: "fiveShip",
+        small: "fiveShipSmall",
         color: "blue",
         body: [],
         x: null,
         y: null,
+        drags: null,
+        drag: null,
         },
     ];
-    let allClear = false;
 
     // runs in the beginning of a game
     const init = () => {
@@ -383,7 +397,10 @@ const Gamedom = () => {
     // this will show the placement form
     const showPlacementForm = () => {
         showForm("placementForm");
-        generatePlacementBoard();
+        generatePlacementBoard("placementBoard");
+        generatePlacementBoard("placementBoardSmall");
+        dragShip();
+        dragShipSmall();
     };
 
     // this will hide the from you choose
@@ -686,10 +703,95 @@ const Gamedom = () => {
                 onDragEnd: dragEnd,
             };
             let drag = new Draggable (ship, options);
+            shipPositions[i].drag = drag;
             ship.addEventListener("dblclick", () => {
                 goVertical(ships[i], drag);
             });
         };
+    };
+
+    // this will be the code to drag the ship container in the small size
+    const dragShipSmall = () => {
+        let ships = ["twoShipSmall", "threeShipSmall", "threeShipTwoSmall", "fourShipSmall", "fiveShipSmall"];
+        for (let i = 0; i < ships.length; i++){
+            let ship = document.getElementById(ships[i]);
+            let options = {
+                grid: 25,
+                limit: document.getElementById("placementBoardSmall"),
+                onDragEnd: dragEndSmall,
+            };
+            let drag = new Draggable (ship, options);
+            shipPositions[i].drags = drag;
+            ship.addEventListener("dblclick", () => {
+                goVerticalSmall(ships[i], drag);
+            });
+        };
+    };
+
+    // this will change a ship to vertical for small size
+    const goVerticalSmall = (shipName, drag) => {
+        console.log("small");
+        let ship = document.getElementById(shipName);
+        let sample = ship.getAttribute("value");
+        let width = ship.style.width;
+        let height = ship.style.height;
+        ship.style.width = height;
+        ship.style.height = width;
+        let num;
+        for (let i = 0; i < shipPositions.length; i++){
+            if (shipPositions[i].id === sample) {
+                num = i;
+            };
+        };
+        shipPositions[num].vertical = !shipPositions[num].vertical
+        drag["_dimensions"]["height"] = width;
+        drag["_dimensions"]["width"] = height;
+        let bigShip = document.getElementById(shipPositions[num].name);
+        let bwidth = bigShip.style.width;
+        let bheight = bigShip.style.height;
+        bigShip.style.width = bheight;
+        bigShip.style.height = bwidth;
+        drag.setOption('limit', document.getElementById("placementBoardSmall"));
+        let x = drag["_dimensions"]["left"];
+        let y = drag["_dimensions"]["top"];
+        shipPositions[num].drag["_dimensions"]["height"] = bwidth;
+        shipPositions[num].drag["_dimensions"]["width"] = bheight;
+        shipPositions[num].drag.setOption('limit', document.getElementById("placementBoard"));
+        if (shipPositions[num].vertical && drag["_dimensions"]["top"] > 250 - drag["_dimensions"]["height"]){
+            drag.set(drag["_dimensions"]["left"], 250 - drag["_dimensions"]["height"]);
+            y = 250 - drag["_dimensions"]["height"];
+        } else if (!(shipPositions[num].vertical) && drag["_dimensions"]["left"] > 250 - drag["_dimensions"]["width"]){
+            drag.set(250 - drag["_dimensions"]["width"], drag["_dimensions"]["top"]);
+            x = 250 - drag["_dimensions"]["width"]
+        };
+        updateShipPositionSmall(ship.getAttribute("value"), x, y);
+        tempSurrounding(ship.getAttribute("id"));
+        changeColor();
+        updateColor();
+        toggleDisable();
+    };
+
+    // code for the drag end for small size
+    const dragEndSmall = (element, x, y) => {
+        console.log("dragsmall");
+        updateShipPositionSmall(element.getAttribute("value"), x, y);
+        tempSurrounding(element.getAttribute("id"));
+        changeColor();
+        updateColor();
+        toggleDisable();
+    };
+
+    // will update the ship positions for small size
+    const updateShipPositionSmall = (value, x, y) => {
+        let num;
+        for (let i = 0; i < shipPositions.length; i++){
+            if (shipPositions[i].id === value) {
+                num = i;
+            };
+        };
+        shipPositions[num].x = x/25;
+        shipPositions[num].y = y/25;
+        shipPositions[num].drag.set(x * 2, y * 2);
     };
 
     // this will mark the surrounding area of the ship
@@ -752,10 +854,18 @@ const Gamedom = () => {
                 num = i;
             };
         };
+        let smallShip = document.getElementById(shipPositions[num].small);
+        let swidth = smallShip.style.width;
+        let sheight = smallShip.style.height;
+        smallShip.style.width = sheight;
+        smallShip.style.height = swidth;
         shipPositions[num].vertical = !shipPositions[num].vertical
         drag["_dimensions"]["height"] = width;
         drag["_dimensions"]["width"] = height;
         drag.setOption('limit', document.getElementById("placementBoard"));
+        shipPositions[num].drags["_dimensions"]["height"] = swidth;
+        shipPositions[num].drags["_dimensions"]["width"] = sheight;
+        shipPositions[num].drags.setOption('limit', document.getElementById("placementBoardSmall"));
         let x = drag["_dimensions"]["left"];
         let y = drag["_dimensions"]["top"];
         if (shipPositions[num].vertical && drag["_dimensions"]["top"] > 500 - drag["_dimensions"]["height"]){
@@ -775,9 +885,12 @@ const Gamedom = () => {
     // this will update the colors of the moving ships
     const updateColor = () => {
         for (let i = 0; i < shipPositions.length; i++){
-            ship = document.getElementById(shipPositions[i].name);
+            let ship = document.getElementById(shipPositions[i].name);
+            let smallShip = document.getElementById(shipPositions[i].small);
+            smallShip.className = '';
             ship.className = '';
             ship.classList.add(shipPositions[i].color);
+            smallShip.classList.add(shipPositions[i].color);
         };
     };
 
@@ -789,6 +902,7 @@ const Gamedom = () => {
             };
         };
         document.getElementById("startSingleGame").disabled = shouldDisable;
+        document.getElementById("startSingleGameSmall").disabled = shouldDisable;
     };
 
 
@@ -828,21 +942,20 @@ const Gamedom = () => {
         };
         shipPositions[num].x = x/50;
         shipPositions[num].y = y/50;
+        shipPositions[num].drags.set((x / 2), (y / 2));
     };
 
 
     // this will generate the placement board
-    const generatePlacementBoard = () => {
-        const board = document.getElementById("placementBoard");
+    const generatePlacementBoard = (name) => {
+        const board = document.getElementById(name);
         for (let i = 0; i <= 9; i++){
             for (let ii = 0; ii <= 9; ii++){
                 let square = document.createElement("div");
-                square.id = `p, ${ii}, ${i}`
                 square.classList.add("square");
                 board.appendChild(square);
             };
         };
-        dragShip();
     };
 
     init ();

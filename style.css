@@ -81,6 +81,15 @@ body {
     margin: 20px auto;
 }
 
+#placementBoardSmall {
+    display: grid;
+    width: 250px;
+    height: 250px;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    margin: 20px auto;
+}
+
 .buttonSpacer {
     height: 10px;
 }
@@ -129,10 +138,44 @@ body {
     box-sizing: border-box;
 }
 
+#fiveShipSmall {
+    width: 125px;
+    height: 25px;
+    border: 3px solid black;
+    box-sizing: border-box;
+}
+
+#fourShipSmall {
+    width: 100px;
+    height: 25px;
+    border: 3px solid black;
+    box-sizing: border-box;
+}
+
+#threeShipSmall {
+    width: 75px;
+    height: 25px;
+    border: 3px solid black;
+    box-sizing: border-box;
+}
+
+#threeShipTwoSmall {
+    width: 75px;
+    height: 25px;
+    border: 3px solid black;
+    box-sizing: border-box;
+}
+
+#twoShipSmall {
+    width: 50px;
+    height: 25px;
+    border: 3px solid black;
+    box-sizing: border-box;
+}
+
 .in_ul {
     text-align: center;
     list-style: none;
-    
 }
 
 .red {
@@ -151,6 +194,13 @@ body {
 #testDiv {
     margin: 0 auto;
     width: 500px;
+    position: relative;
+}
+
+#testDivTwo {
+    display: hidden;
+    margin: 0 auto;
+    width: 250px;
     position: relative;
 }
 
@@ -390,9 +440,12 @@ label, #result {
             height: 250px;
         }
 
-
         #testDiv {
-            width: 250px;
+            display: none;
+        }
+
+        #testDivTwo {
+            display: block;
         }
 
         .playerBoxHolder {
