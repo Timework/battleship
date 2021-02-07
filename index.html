@@ -7,6 +7,7 @@
         <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
         <script src="./dist/bundle.js" defer></script>
+        <script src="https://kit.fontawesome.com/793d8924a3.js" crossorigin="anonymous"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
@@ -20,8 +21,7 @@
                 <p>You cannot place ships next to each other.</p>
                 <p>If you hit a ship you can attack again.</p>
                 <p>Double clicking a ship changes its axis.</p>
-                <p>The placement board is not mobile responsive so you while you can still place ships
-                     and play the game you cannot change the ship's axis during placement on a phone.</p>
+                <p>For phone users click the button.</p>
             </div>
         </div>  
         <div id="resultHolder">
@@ -91,21 +91,31 @@
                 <div class="centerButton">
                     <button type="button" class="startButton" id="startSingleGameSmall" disabled="true">Start Game</button>
                 </div>
-                <div>
-                    <div class="blue" id="fiveShipSmall" draggable="true" value="5"></div>
-                </div>
-                <div>
-                    <div class="blue" id="fourShipSmall" draggable="true" value="4"></div>
-                </div>
-                <div>
-                    <div class="blue" id="threeShipTwoSmall" draggable="true" value="2"></div>
-                </div>
-                <div>
-                    <div class="blue" id="threeShipSmall" draggable="true" value="3"></div>
-                </div>
-                <div>
-                    <div class="blue" id="twoShipSmall" draggable="true" value="1"></div>
-                </div>
+                    <div>
+                        <div class="blue" id="fiveShipSmall" draggable="true" value="5">
+                            <button class="shipButton" type="button" id="fiveShipSmallButton"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="blue" id="fourShipSmall" draggable="true" value="4">
+                            <button class="shipButton" type="button" id="fourShipSmallButton"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="blue" id="threeShipTwoSmall" draggable="true" value="2">
+                            <button class="shipButton" type="button" id="threeShipTwoSmallButton"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="blue" id="threeShipSmall" draggable="true" value="3">
+                            <button class="shipButton" type="button" id="threeShipSmallButton"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="blue" id="twoShipSmall" draggable="true" value="1">
+                            <button class="shipButton" type="button" id="twoShipSmallButton"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
             </div>
         </div>
         <div id="flexHolder">

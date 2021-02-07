@@ -19,6 +19,10 @@ html {
     position: relative;
 }
 
+.smallPosition {
+    display: none;
+}
+
 #error {
     text-align: center;
 }
@@ -198,10 +202,13 @@ body {
 }
 
 #testDivTwo {
-    display: hidden;
     margin: 0 auto;
     width: 250px;
     position: relative;
+}
+
+.fa-sync-alt{
+    margin-left: -4px;
 }
 
 
@@ -249,6 +256,11 @@ label, #result {
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
+}
+
+.shipButton {
+    height: 22px;
+    width: 22px;
 }
 
 
@@ -440,11 +452,11 @@ label, #result {
             height: 250px;
         }
 
-        #testDiv {
+        .bigPosition {
             display: none;
         }
 
-        #testDivTwo {
+        .smallPosition {
             display: block;
         }
 

@@ -27,6 +27,7 @@ const Gamedom = () => {
         y: null,
         drags: null,
         drag: null,
+        button: "twoShipSmallButton",
         },
         {id: "2",
         vertical: false,
@@ -40,6 +41,7 @@ const Gamedom = () => {
         y: null,
         drags: null,
         drag: null,
+        button: "threeShipTwoSmallButton",
         },
         {id: "3",
         vertical: false,
@@ -53,6 +55,7 @@ const Gamedom = () => {
         y: null,
         drags: null,
         drag: null,
+        button: "threeShipSmallButton",
         },
         {id: "4",
         vertical: false,
@@ -66,6 +69,7 @@ const Gamedom = () => {
         y: null,
         drags: null,
         drag: null,
+        button: "fourShipSmallButton",
         },
         {id: "5",
         vertical: false,
@@ -79,6 +83,7 @@ const Gamedom = () => {
         y: null,
         drags: null,
         drag: null,
+        button: "fiveShipSmallButton",
         },
     ];
 
@@ -102,7 +107,11 @@ const Gamedom = () => {
     // this will start the game of the single player mode
     const startSingleGame = () => {
         const beginning = document.getElementById("startSingleGame");
+        const smallBeginning = document.getElementById("startSingleGameSmall");
         beginning.addEventListener("click", () => {
+            testPackage();
+        });
+        smallBeginning.addEventListener("click", () => {
             testPackage();
         });
     };
@@ -144,6 +153,8 @@ const Gamedom = () => {
         generatePlacementBoard("placementBoardSmall");
         dragShip();
         dragShipSmall();
+        document.getElementById("testDiv").classList.add("bigPosition");
+        document.getElementById("testDivTwo").classList.add("smallPosition");
     };
 
     // this will hide the from you choose
@@ -437,7 +448,7 @@ const Gamedom = () => {
 
     // this will be the code to drag the ship container
     const dragShip = () => {
-        let ships = ["twoShip", "threeShip", "threeShipTwo", "fourShip", "fiveShip"];
+        let ships = ["twoShip", "threeShipTwo", "threeShip", "fourShip", "fiveShip"];
         for (let i = 0; i < ships.length; i++){
             let ship = document.getElementById(ships[i]);
             let options = {
@@ -450,14 +461,28 @@ const Gamedom = () => {
             ship.addEventListener("dblclick", () => {
                 goVertical(ships[i], drag);
             });
+            ship.addEventListener("click", () => {
+                notMove(i);
+            });
         };
+    };
+
+    // this will keep a ship still when clicked
+    const notMove = (spot) => {
+        shipPositions[spot].drag.set((shipPositions[spot].x * 50), (shipPositions[spot].y * 50));
+    };
+
+    // this will keep a ship still when clicked in small mode
+    const notMoveSmall = (spot) => {
+        shipPositions[spot].drags.set((shipPositions[spot].x * 25), (shipPositions[spot].y * 25))
     };
 
     // this will be the code to drag the ship container in the small size
     const dragShipSmall = () => {
-        let ships = ["twoShipSmall", "threeShipSmall", "threeShipTwoSmall", "fourShipSmall", "fiveShipSmall"];
+        let ships = ["twoShipSmall", "threeShipTwoSmall", "threeShipSmall", "fourShipSmall", "fiveShipSmall"];
         for (let i = 0; i < ships.length; i++){
             let ship = document.getElementById(ships[i]);
+            let button = document.getElementById(shipPositions[i].button);
             let options = {
                 grid: 25,
                 limit: document.getElementById("placementBoardSmall"),
@@ -465,15 +490,17 @@ const Gamedom = () => {
             };
             let drag = new Draggable (ship, options);
             shipPositions[i].drags = drag;
-            ship.addEventListener("dblclick", () => {
+            button.addEventListener("click", () => {
                 goVerticalSmall(ships[i], drag);
+            });
+            ship.addEventListener("click", () => {
+                notMoveSmall(i);
             });
         };
     };
 
     // this will change a ship to vertical for small size
     const goVerticalSmall = (shipName, drag) => {
-        console.log("small");
         let ship = document.getElementById(shipName);
         let sample = ship.getAttribute("value");
         let width = ship.style.width;
@@ -487,19 +514,18 @@ const Gamedom = () => {
             };
         };
         shipPositions[num].vertical = !shipPositions[num].vertical
-        drag["_dimensions"]["height"] = width;
-        drag["_dimensions"]["width"] = height;
+        drag["_dimensions"]["height"] = parseInt(width);
+        drag["_dimensions"]["width"] = parseInt(height);
         let bigShip = document.getElementById(shipPositions[num].name);
         let bwidth = bigShip.style.width;
         let bheight = bigShip.style.height;
         bigShip.style.width = bheight;
         bigShip.style.height = bwidth;
-        drag.setOption('limit', document.getElementById("placementBoardSmall"));
         let x = drag["_dimensions"]["left"];
         let y = drag["_dimensions"]["top"];
-        shipPositions[num].drag["_dimensions"]["height"] = bwidth;
-        shipPositions[num].drag["_dimensions"]["width"] = bheight;
-        shipPositions[num].drag.setOption('limit', document.getElementById("placementBoard"));
+        drag.setOption('limit', document.getElementById("placementBoardSmall"));
+        shipPositions[num].drag["_dimensions"]["height"] = parseInt(bwidth);
+        shipPositions[num].drag["_dimensions"]["width"] = parseInt(bheight);
         if (shipPositions[num].vertical && drag["_dimensions"]["top"] > 250 - drag["_dimensions"]["height"]){
             drag.set(drag["_dimensions"]["left"], 250 - drag["_dimensions"]["height"]);
             y = 250 - drag["_dimensions"]["height"];
@@ -512,11 +538,13 @@ const Gamedom = () => {
         changeColor();
         updateColor();
         toggleDisable();
+        document.getElementById("testDiv").className = '';
+        shipPositions[num].drag.setOption('limit', document.getElementById("placementBoard"));
+        document.getElementById("testDiv").classList.add("bigPosition");
     };
 
     // code for the drag end for small size
     const dragEndSmall = (element, x, y) => {
-        console.log("dragsmall");
         updateShipPositionSmall(element.getAttribute("value"), x, y);
         tempSurrounding(element.getAttribute("id"));
         changeColor();
@@ -535,6 +563,9 @@ const Gamedom = () => {
         shipPositions[num].x = x/25;
         shipPositions[num].y = y/25;
         shipPositions[num].drag.set(x * 2, y * 2);
+        document.getElementById("testDiv").className = '';
+        shipPositions[num].drag.setOption('limit', document.getElementById("placementBoard"));
+        document.getElementById("testDiv").classList.add("bigPosition");
     };
 
     // this will mark the surrounding area of the ship
@@ -603,12 +634,12 @@ const Gamedom = () => {
         smallShip.style.width = sheight;
         smallShip.style.height = swidth;
         shipPositions[num].vertical = !shipPositions[num].vertical
-        drag["_dimensions"]["height"] = width;
-        drag["_dimensions"]["width"] = height;
+        drag["_dimensions"]["height"] = parseInt(width);
+        drag["_dimensions"]["width"] = parseInt(height);
         drag.setOption('limit', document.getElementById("placementBoard"));
-        shipPositions[num].drags["_dimensions"]["height"] = swidth;
-        shipPositions[num].drags["_dimensions"]["width"] = sheight;
-        shipPositions[num].drags.setOption('limit', document.getElementById("placementBoardSmall"));
+        shipPositions[num].drags["_dimensions"]["height"] = parseInt(swidth);
+        shipPositions[num].drags["_dimensions"]["width"] = parseInt(sheight);
+        console.log(shipPositions[num].drags["_dimensions"]["height"]);
         let x = drag["_dimensions"]["left"];
         let y = drag["_dimensions"]["top"];
         if (shipPositions[num].vertical && drag["_dimensions"]["top"] > 500 - drag["_dimensions"]["height"]){
@@ -623,6 +654,9 @@ const Gamedom = () => {
         changeColor();
         updateColor();
         toggleDisable();
+        document.getElementById("testDivTwo").className = '';
+        shipPositions[num].drags.setOption('limit', document.getElementById("placementBoardSmall"));
+        document.getElementById("testDivTwo").classList.add("smallPosition");
     };
 
     // this will update the colors of the moving ships
@@ -686,6 +720,9 @@ const Gamedom = () => {
         shipPositions[num].x = x/50;
         shipPositions[num].y = y/50;
         shipPositions[num].drags.set((x / 2), (y / 2));
+        document.getElementById("testDivTwo").className = '';
+        shipPositions[num].drags.setOption('limit', document.getElementById("placementBoardSmall"));
+        document.getElementById("testDivTwo").classList.add("smallPosition");
     };
 
 
