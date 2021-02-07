@@ -493,6 +493,12 @@ const Gamedom = () => {
             button.addEventListener("click", () => {
                 goVerticalSmall(ships[i], drag);
             });
+            button.addEventListener("touchstart", () => {
+                goVerticalSmall(ships[i], drag);
+            });            
+            ship.addEventListener("touchstart", () => {
+                notMoveSmall(i);
+            });
             ship.addEventListener("click", () => {
                 notMoveSmall(i);
             });
@@ -521,16 +527,16 @@ const Gamedom = () => {
         let bheight = bigShip.style.height;
         bigShip.style.width = bheight;
         bigShip.style.height = bwidth;
-        let x = drag["_dimensions"]["left"];
-        let y = drag["_dimensions"]["top"];
+        let x = shipPositions[num].x * 25;
+        let y = shipPositions[num].y * 25;
         drag.setOption('limit', document.getElementById("placementBoardSmall"));
         shipPositions[num].drag["_dimensions"]["height"] = parseInt(bwidth);
         shipPositions[num].drag["_dimensions"]["width"] = parseInt(bheight);
-        if (shipPositions[num].vertical && drag["_dimensions"]["top"] > 250 - drag["_dimensions"]["height"]){
-            drag.set(drag["_dimensions"]["left"], 250 - drag["_dimensions"]["height"]);
+        if (shipPositions[num].vertical && y > 250 - drag["_dimensions"]["height"]){
+            drag.set(x, 250 - drag["_dimensions"]["height"]);
             y = 250 - drag["_dimensions"]["height"];
-        } else if (!(shipPositions[num].vertical) && drag["_dimensions"]["left"] > 250 - drag["_dimensions"]["width"]){
-            drag.set(250 - drag["_dimensions"]["width"], drag["_dimensions"]["top"]);
+        } else if (!(shipPositions[num].vertical) && x > 250 - drag["_dimensions"]["width"]){
+            drag.set(250 - drag["_dimensions"]["width"], y);
             x = 250 - drag["_dimensions"]["width"]
         };
         updateShipPositionSmall(ship.getAttribute("value"), x, y);
