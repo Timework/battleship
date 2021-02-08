@@ -1,6 +1,6 @@
 Readme
 
-This is a battleship game where you can play against a computer AI with 4 difficulties available.
+This is a battleship game where you can play against a computer AI with 4 difficulties available. This was developed using TDD.
 
 Rules
 
@@ -28,13 +28,13 @@ Has two modes of attacking
 
 First mode uses a weighted random system. The AI runs through all possible ship placements and then gives each spot a weight based on the number of possabilities of a ship being on them. For example if a square has a weight of 4 and another square has a weight of 16 then the second square has 4 times the chance of being selected than the first square. The weight is updated after every attack based on the remaining ships.
 
-After half of all possible options (1040) have been eliminated the AI begins to attack the highest probablity square. If there is more than one square tied for the highest weight then the square is chosen at random amongst the high weighted squares.
+After half of all possible options (1040) have been eliminated the AI begins to attack the highest probablity square. If there is more than one square tied for the highest weight then the square is chosen at random amongst the highest weighted squares.
 
 Regardless of the attack mode the AI will not attack squares that have a zero possability of a ship being on them.
 
 The AI is also able to determine the axis of the ship based on the successful attacks.
 
-Furthermore the AI will be able to determine whether the ship could be along the axis as all and if it is not then it will not attack squares along that axis. For example, if the smallest ship yet to be sunk is 4 squares long and the AI has landed a hit but the y-axis including the spot hit has only room for a 3 square ship then the AI will know that it is not possible for the ship to be along the y-axis and will only attack spots on the x-axis. 
+Furthermore the AI will be able to determine whether the ship could be along the axis at all and if it is not then it will not attack squares along that axis. For example, if the smallest ship yet to be sunk is 4 squares long and the AI has landed a hit but the y-axis including the spot hit has only room for a 3 square ship then the AI will know that it is not possible for the ship to be along the y-axis and will only attack spots on the x-axis. 
 
 The AI will also constantly check to see if the ship can fit on the axis after an attack fails. For example,if the smallest ship not yet sunk is 3 squares long and if the x-axis is 5 squares long including the square hit but after a failed attack the x-axis only has room for a two squared ship then the AI will know that the ship cannot be on the x-axis and will only attack spots on the y-axis.
 
